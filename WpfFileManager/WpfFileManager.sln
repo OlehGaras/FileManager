@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfFileManager", "WpfFileManager\WpfFileManager.csproj", "{F64E277E-DBAD-41AD-A88F-9B808F6691AC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F64E277E-DBAD-41AD-A88F-9B808F6691AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F64E277E-DBAD-41AD-A88F-9B808F6691AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F64E277E-DBAD-41AD-A88F-9B808F6691AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F64E277E-DBAD-41AD-A88F-9B808F6691AC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
