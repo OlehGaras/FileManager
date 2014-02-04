@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.IO;
+using System.Windows.Media;
 
 namespace testPlugin
 {
@@ -7,6 +8,7 @@ namespace testPlugin
         public DirectoryInfo(string path)
         {
             Path = path;
+            DisplayName = new System.IO.DirectoryInfo(path).Name;
         }
         public string Path { get; private set; }
         public string DisplayName { get; private set; }

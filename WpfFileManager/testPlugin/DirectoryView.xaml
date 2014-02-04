@@ -9,7 +9,10 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type testPlugin:DirectoryInfo}">
-            <TextBlock Text="{Binding Path}"/>
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding Icon}" Width="32" Height="32"/>
+                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+            </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type testPlugin:DoublePointInfo}">
             <TextBlock Text=".."/>
@@ -17,7 +20,7 @@
         <DataTemplate DataType="{x:Type testPlugin:FileInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="32" Height="32"/>
-                <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
@@ -26,9 +29,6 @@
             <i:Interaction.Triggers>
                 <i:EventTrigger  EventName="KeyUp" >
                     <command:EventToCommand Command="{Binding OnListItemKeyPressed}" PassEventArgsToCommand="True"  />
-                </i:EventTrigger>
-                <i:EventTrigger  EventName="SelectionChanged" >
-                    <command:EventToCommand Command="{Binding GetTb}"  CommandParameter="{Binding ElementName=FolderPath}"  PassEventArgsToCommand="True"  />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ListView>

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media.Imaging;
 using FileManager;
 
 namespace testPlugin
@@ -31,7 +27,8 @@ namespace testPlugin
             get
             {
                 if (mOnListItemKeyPressed == null)
-                    mOnListItemKeyPressed = new DelegateCommand(param => KeyPressed(param));
+                    mOnListItemKeyPressed = new DelegateCommand(KeyPressed);
+
                 return mOnListItemKeyPressed;
             }
 
@@ -106,15 +103,15 @@ namespace testPlugin
 
         private void SetTheIcon(IEnumerable<IFileSystemInfo> fileSystemInfos)
         {
-            foreach (var fileSystemInfo in fileSystemInfos.OfType<FileInfo>())
+            foreach (var fileSystemInfo in fileSystemInfos)
             {
-                var icon = Icon.ExtractAssociatedIcon(fileSystemInfo.Path);
-                if (icon != null)
+                if (fileSystemInfo.GetType() == typeof(DirectoryInfo))
                 {
-                    fileSystemInfo.Icon = Imaging.CreateBitmapSourceFromHIcon(icon.Handle,
-                                                                              new Int32Rect(0, 0, icon.Width, icon.Height),
-                                                                              BitmapSizeOptions.FromEmptyOptions());
-                    icon.Dispose();
+                    fileSystemInfo.Icon = FolderManager.GetImageSource(fileSystemInfo.Path, ShellManager.ItemState.Undefined);
+                }
+                else
+                {
+                    fileSystemInfo.Icon = FileManager.GetImageSource(fileSystemInfo.Path);
                 }
             }
         }

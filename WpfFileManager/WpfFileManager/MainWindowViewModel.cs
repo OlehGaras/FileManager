@@ -68,7 +68,7 @@ namespace WpfFileManager
             RightPanel = content;
         }
 
-        private string mLeftCurrentDirectory = @"D:\repos\SameFilesFinder";
+        private string mLeftCurrentDirectory = @"D:\Eleks Work";
         public string LeftCurrentDirectory
         {
             get { return mLeftCurrentDirectory; }
@@ -79,7 +79,7 @@ namespace WpfFileManager
             }
         }
 
-        private string mRightCurrentDirectory = @"D:\repos\SameFilesFinder";
+        private string mRightCurrentDirectory = @"D:\Eleks Work";
         public string RightCurrentDirectory
         {
             get { return mRightCurrentDirectory; }
