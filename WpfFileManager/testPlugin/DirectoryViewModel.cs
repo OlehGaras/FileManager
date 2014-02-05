@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Input;
 using FileManager;
 
@@ -40,7 +41,7 @@ namespace testPlugin
             if (k.Key == Key.Return && SelectedItem is DirectoryInfo)
             {
                 var path = SelectedItem.Path;
-                if (SelectedItem.GetType() == typeof(DoublePointInfo))
+                if (SelectedItem.GetType() == typeof (DoublePointInfo))
                 {
                     var directoryInfo = Directory.GetParent(SelectedItem.Path);
                     if (directoryInfo != null)
@@ -105,7 +106,7 @@ namespace testPlugin
         {
             foreach (var fileSystemInfo in fileSystemInfos)
             {
-                if (fileSystemInfo.GetType() == typeof(DirectoryInfo))
+                if (fileSystemInfo is DirectoryInfo)
                 {
                     fileSystemInfo.Icon = FolderManager.GetImageSource(fileSystemInfo.Path, ShellManager.ItemState.Undefined);
                 }

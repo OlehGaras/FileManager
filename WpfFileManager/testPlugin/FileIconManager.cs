@@ -15,7 +15,7 @@ namespace testPlugin
 
         public static ImageSource GetImageSource(string filename, Size size)
         {
-            using (var icon = ShellManager.GetIcon(Path.GetExtension(filename), ShellManager.ItemType.File, ShellManager.IconSize.Small, ShellManager.ItemState.Undefined))
+            using (var icon = ShellManager.GetIcon(Path.GetExtension(filename), ShellManager.ItemType.File, ShellManager.IconSize.Large, ShellManager.ItemState.Undefined))
             {
                 return Imaging.CreateBitmapSourceFromHIcon(icon.Handle, System.Windows.Int32Rect.Empty, BitmapSizeOptions.FromWidthAndHeight(size.Width, size.Height));
             }

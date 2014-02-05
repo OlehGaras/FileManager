@@ -6,5 +6,6 @@ namespace FileManager
     {
         void SetLeftPanelContent(UserControl content);
         void SetRightPanelContent(UserControl content);
+        void SetShortcutPanelContent(UserControl content);
     }
 }

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fileManager.api", "FileMana
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testPlugin", "testPlugin\testPlugin.csproj", "{9A4E23CB-65A8-4F6C-8210-2C8BD6625AA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShortcutsPlugin", "ShotCutsPlugin\ShortcutsPlugin.csproj", "{525CCC46-0D4C-426E-ACD2-45350F403A28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{9A4E23CB-65A8-4F6C-8210-2C8BD6625AA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A4E23CB-65A8-4F6C-8210-2C8BD6625AA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A4E23CB-65A8-4F6C-8210-2C8BD6625AA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{525CCC46-0D4C-426E-ACD2-45350F403A28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{525CCC46-0D4C-426E-ACD2-45350F403A28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{525CCC46-0D4C-426E-ACD2-45350F403A28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{525CCC46-0D4C-426E-ACD2-45350F403A28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
