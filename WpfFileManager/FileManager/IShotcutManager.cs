@@ -5,8 +5,9 @@ namespace FileManager
 {
     public interface IShotcutManager
     {
-        List<Callback> Functions { get; set; }
-        void AddAction(Callback action);
+        //List<ShortcutAction> Functions { get; }
+        List<ShortcutAction> GetActions(); 
+        void AddAction(ShortcutAction action);
         event EventHandler AvailableFunctionsChanged;
     }
 }

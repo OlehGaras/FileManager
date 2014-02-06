@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace FileManager
 {
@@ -8,7 +7,6 @@ namespace FileManager
     {
         Version PluginVersion { get; }
         Version AppVersion { get; }
-        //List<Callback> RegisterAvailableFunctions();
         void Apply();
     }
 }

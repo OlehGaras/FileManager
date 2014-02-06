@@ -26,7 +26,7 @@ namespace WpfFileManager
             MainWindow = mainWindow;
             mainWindow.Show();
             mainWindowViewModel.ApplyPlugins();
-            mainWindowViewModel.RegisterAvailableFunctions();
+            //mainWindowViewModel.RegisterAvailableFunctions();
         }
     }
 }

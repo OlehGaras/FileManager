@@ -16,24 +16,16 @@ namespace WpfFileManager
     {
         private Version AppVersion { get { return new Version(1, 0); } }
 
-        private List<Callback> mFunctions = new List<Callback>();
-        public List<Callback> Functions
+        private readonly List<ShortcutAction> mFunctions = new List<ShortcutAction>();
+
+        public List<ShortcutAction> GetActions()
         {
-            get { return mFunctions; }
-            set
-            {
-                if (mFunctions != value)
-                {
-                    mFunctions = value;
-                    OnPropertyChanged("Functions");
-                }
-            }
+            return mFunctions;
         }
 
-        public void AddAction(Callback action)
+        public void AddAction(ShortcutAction action)
         {
-            Functions.Add(action);
-            OnAvailableFunctionsChanged();
+            mFunctions.Add(action);
         }
 
         public event EventHandler AvailableFunctionsChanged;
@@ -80,23 +72,11 @@ namespace WpfFileManager
             {
                 if (plugin.AppVersion == AppVersion)
                 {
-                    plugin.Apply();             
+                    plugin.Apply();  
+                    
                 }
             }
-        }
-
-        public void RegisterAvailableFunctions()
-        {
-            var plugins = ServiceLocator.Current.GetAllInstances<IPlugin>();
-            foreach (var plugin in plugins)
-            {
-                if (plugin.AppVersion == AppVersion)
-                {
-                    //Functions.AddRange(plugin.RegisterAvailableFunctions());
-                    OnAvailableFunctionsChanged();
-                }
-            }
-
+            OnAvailableFunctionsChanged();
         }
 
         private UserControl mShortCutPanel;

@@ -19,7 +19,7 @@ namespace testPlugin
                 throw new ArgumentNullException("viewController");
             if (currentDirectory == null)
                 throw new ArgumentNullException("currentDirectory");
-            if (shotcutManager == null) 
+            if (shotcutManager == null)
                 throw new ArgumentNullException("shotcutManager");
             mViewController = viewController;
             mCurrentDirectory = currentDirectory;
@@ -35,10 +35,16 @@ namespace testPlugin
             var rightPanel = new DirectoryView(new DirectoryViewModel(mCurrentDirectory, Panel.Right));
             mViewController.SetLeftPanelContent(leftPanel);
             mViewController.SetRightPanelContent(rightPanel);
-            mShotcutManager.AddAction(new Callback(() =>
-            {
-                var a = 5;
-            }));
+            mShotcutManager.AddAction(new ShortcutAction()
+                {
+                    Action = () => { Console.WriteLine("HelloWorld"); },
+                    Name = "HelloWorld Action"
+                });
+            mShotcutManager.AddAction(new ShortcutAction()
+                {
+                    Action = () => { Console.WriteLine("ByeWorld"); },
+                    Name = "ByeWorld Action"
+                });
         }
     }
 }

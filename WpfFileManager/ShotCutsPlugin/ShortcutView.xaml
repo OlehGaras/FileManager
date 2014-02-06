@@ -6,32 +6,20 @@
              xmlns:shortcutsPlugin="clr-namespace:ShotCutsPlugin"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF45"
+             xmlns:fileManager="clr-namespace:FileManager;assembly=FileManager"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type shortcutsPlugin:Shortcut}">
-            <Grid >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Margin="2" Text="{Binding ShortcutText}" HorizontalAlignment="Stretch"></TextBlock>
-                <ComboBox Grid.Column="1" Margin="2" ItemsSource="{Binding Functions}" HorizontalAlignment="Stretch" ></ComboBox>
-                <Button Content="X" Margin="2" Grid.Column="2" HorizontalAlignment="Stretch"/>
-            </Grid>
-        </DataTemplate>
-        
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        <Grid Name ="addShortcut"  Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
@@ -42,11 +30,39 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </TextBox>
-            <ComboBox Grid.Column="1" Margin="3" ItemsSource="{Binding Callbacks}" HorizontalAlignment="Stretch" ></ComboBox>
-            <Button Content="Save" Margin="3,3,15,3" Grid.Column="2" HorizontalAlignment="Stretch"/>
+            <ComboBox Grid.Column="1" Margin="3" ItemsSource="{Binding Callbacks}" HorizontalAlignment="Stretch" SelectedItem ="{Binding ComboSelectedItem}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type fileManager:ShortcutAction}">
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button Content="Add" Margin="3,3,3,3" Grid.Column="2" HorizontalAlignment="Stretch"/>
+            <Button Content="Save" Margin="3,3,15,3" Grid.Column="3" HorizontalAlignment="Stretch"/>
         </Grid>
-        <ListView Grid.Row="1" ItemsSource="{Binding Shortcuts}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">            
+        <ListView Grid.Row="1" Name="shortcutsList" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding Shortcuts}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem ="{Binding ListSelectedItem}">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type shortcutsPlugin:Shortcut}">
+                    <Grid Width="{Binding ElementName=addShortcut, Path=ActualWidth}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" TextAlignment="Center" Margin="5" Padding="2" Text="{Binding ShortcutText}" HorizontalAlignment="Stretch" Background="Gainsboro" ></TextBlock>
+                        <TextBlock Grid.Column="1" TextAlignment="Center" Margin="5" Padding="5" Text="{Binding  CurrCallback.Name}" HorizontalAlignment="Stretch" Background="Gainsboro"></TextBlock>
+                        <ComboBox Grid.Column="2" Margin="5" ItemsSource="{Binding Functions}" HorizontalAlignment="Stretch" SelectedItem ="{Binding CurrCallback}">
+                            <ComboBox.ItemTemplate >
+                                <DataTemplate DataType="{x:Type fileManager:ShortcutAction}">
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Content="X" Margin="5,5,35,5" Width="30" Height="30" Grid.Column="3" HorizontalAlignment="Left"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
-        <!--<Button Grid.Row="2" Content="Save"/>-->
     </Grid>
 </UserControl>

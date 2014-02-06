@@ -8,9 +8,8 @@ namespace ShotCutsPlugin
     public class ShortcutViewModel : ViewModelBase
     {
         private readonly IShotcutManager mAvailableFunctions;
-        //private readonly Shortcuts mShortcuts;
-        private List<Callback> mCallbacks = new List<Callback>();
-        public List<Callback> Callbacks
+        private List<ShortcutAction> mCallbacks = new List<ShortcutAction>();
+        public List<ShortcutAction> Callbacks
         {
             get { return mCallbacks; }
             set
@@ -26,11 +25,20 @@ namespace ShotCutsPlugin
         public ShortcutViewModel(IShotcutManager availableFunctions)
         {
             mAvailableFunctions = availableFunctions;
-            mAvailableFunctions.AvailableFunctionsChanged += (sender, args) => mCallbacks.AddRange(mAvailableFunctions.Functions);
+            mAvailableFunctions.AvailableFunctionsChanged += (sender, args) => mCallbacks.AddRange(mAvailableFunctions.GetActions());
             mShortcuts = new List<Shortcut>() { new Shortcut("ctrl+c", mCallbacks), new Shortcut("ctrl+v", mCallbacks) };
         }
 
-        private List<Shortcut> mShortcuts;// = new List<Shortcut>() { new Shortcut("ctrl+c",new List<Callback>()), new Shortcut("ctrl+v", new List<Callback>()) };
+        private void Serialize()
+        {
+
+        }
+
+        private void Deserialize()
+        {
+        }
+
+        private List<Shortcut> mShortcuts;
         public List<Shortcut> Shortcuts
         {
             get { return mShortcuts; }
@@ -54,6 +62,36 @@ namespace ShotCutsPlugin
                 {
                     mNewShortcutText = value;
                     OnPropertyChanged("NewShortcutText");
+                }
+            }
+        }
+
+        private Shortcut mListSelectedItem;
+        public Shortcut ListSelectedItem
+        {
+            get { return mListSelectedItem; }
+            set
+            {
+                if (mListSelectedItem != value)
+                {
+                    mListSelectedItem = value;
+
+                    OnPropertyChanged("ListSelectedItem");
+                }
+            }
+        }
+
+        private ShortcutAction mComboSelectedItem;
+        public ShortcutAction ComboSelectedItem
+        {
+            get { return mComboSelectedItem; }
+            set
+            {
+                if (mComboSelectedItem != value)
+                {
+                    mComboSelectedItem = value;
+
+                    OnPropertyChanged("ComboSelectedItem");
                 }
             }
         }
