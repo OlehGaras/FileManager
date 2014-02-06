@@ -2,6 +2,7 @@
 
 namespace FileManager
 {
+    
     public delegate void Callback();
     public interface IPlugin
     {

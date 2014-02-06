@@ -22,6 +22,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" Margin="10,3,3,3" Text="{Binding NewShortcutText}" HorizontalAlignment="Stretch">
                 <i:Interaction.Triggers>
@@ -37,29 +38,34 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <Button Content="Add" Margin="3,3,3,3" Grid.Column="2" HorizontalAlignment="Stretch"/>
-            <Button Content="Save" Margin="3,3,15,3" Grid.Column="3" HorizontalAlignment="Stretch"/>
+            <Button Content="Add" Margin="3,3,3,3" Padding="2" Grid.Column="2" HorizontalAlignment="Stretch" Command="{Binding AddNewShortcut}"/>
+            <Button Content="Remove" Margin="3" Padding="2" Grid.Column="3" HorizontalAlignment="Stretch" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger  EventName="Click" >
+                        <command:EventToCommand Command="{Binding  DeleteShortcut}" PassEventArgsToCommand="True"  />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Content="Save" Margin="3,3,15,3" Padding="3" Grid.Column="4" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Command="{Binding SaveShortcuts}"/>
         </Grid>
-        <ListView Grid.Row="1" Name="shortcutsList" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding Shortcuts}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem ="{Binding ListSelectedItem}">
+
+
+        <ListView Grid.Row="1" Name="shortcutsList" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ItemsSource="{Binding Shortcuts,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem ="{Binding ListSelectedItem}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type shortcutsPlugin:Shortcut}">
                     <Grid Width="{Binding ElementName=addShortcut, Path=ActualWidth}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" TextAlignment="Center" Margin="5" Padding="2" Text="{Binding ShortcutText}" HorizontalAlignment="Stretch" Background="Gainsboro" ></TextBlock>
-                        <TextBlock Grid.Column="1" TextAlignment="Center" Margin="5" Padding="5" Text="{Binding  CurrCallback.Name}" HorizontalAlignment="Stretch" Background="Gainsboro"></TextBlock>
-                        <ComboBox Grid.Column="2" Margin="5" ItemsSource="{Binding Functions}" HorizontalAlignment="Stretch" SelectedItem ="{Binding CurrCallback}">
+                        <ComboBox Grid.Column="1" Margin="5,5,35,5" ItemsSource="{Binding Functions}" HorizontalAlignment="Stretch"  SelectedItem ="{Binding CurrCallback}" >
                             <ComboBox.ItemTemplate >
                                 <DataTemplate DataType="{x:Type fileManager:ShortcutAction}">
                                     <TextBlock Text="{Binding Name}"/>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button Content="X" Margin="5,5,35,5" Width="30" Height="30" Grid.Column="3" HorizontalAlignment="Left"/>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

@@ -8,12 +8,20 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type testPlugin:DirectoryInfo}">
+        <DataTemplate x:Key="t1" DataType="{x:Type testPlugin:DirectoryInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="16" Height="16"/>
                 <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
+
+        <DataTemplate x:Key="t2" DataType="{x:Type testPlugin:DirectoryInfo}">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding Icon}" Width="32" Height="32"/>
+                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type testPlugin:DoublePointInfo}">
             <TextBlock Text=".."/>
         </DataTemplate>
@@ -25,7 +33,7 @@
         </DataTemplate>
     </UserControl.Resources>
     <Grid>
-        <ListView ItemsSource="{Binding FileSystemInfo}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}">
+        <ListView ItemsSource="{Binding FileSystemInfo}" ItemTemplate="{StaticResource t1}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}">
             <i:Interaction.Triggers>
                 <i:EventTrigger  EventName="KeyUp" >
                     <command:EventToCommand Command="{Binding OnListItemKeyPressed}" PassEventArgsToCommand="True"  />

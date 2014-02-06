@@ -107,7 +107,7 @@ namespace testPlugin
             {
                 if (fileSystemInfo is DirectoryInfo)
                 {
-                    fileSystemInfo.Icon = FolderManager.GetImageSource(fileSystemInfo.Path, ShellManager.ItemState.Undefined);
+                    fileSystemInfo.Icon = FolderManager.GetImageSource(fileSystemInfo.Path, ShellManager.ItemState.Undefined);   
                 }
                 else
                 {

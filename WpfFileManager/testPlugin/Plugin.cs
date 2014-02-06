@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using FileManager;
 
@@ -35,14 +34,21 @@ namespace testPlugin
             var rightPanel = new DirectoryView(new DirectoryViewModel(mCurrentDirectory, Panel.Right));
             mViewController.SetLeftPanelContent(leftPanel);
             mViewController.SetRightPanelContent(rightPanel);
-            mShotcutManager.AddAction(new ShortcutAction()
+            mShotcutManager.AddAction(new ShortcutAction
                 {
-                    Action = () => { Console.WriteLine("HelloWorld"); },
+                    Action = () =>
+                    {
+                        Console.WriteLine("HelloWorld");
+                        Console.Read();
+                    },
                     Name = "HelloWorld Action"
                 });
-            mShotcutManager.AddAction(new ShortcutAction()
+            mShotcutManager.AddAction(new ShortcutAction
                 {
-                    Action = () => { Console.WriteLine("ByeWorld"); },
+                    Action = () =>
+                        {
+                            Console.WriteLine("ByeWorld");
+                        },
                     Name = "ByeWorld Action"
                 });
         }

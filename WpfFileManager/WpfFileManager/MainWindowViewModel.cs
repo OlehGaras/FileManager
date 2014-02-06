@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Text;
 using System.Windows.Controls;
 using System.Windows.Input;
 using FileManager;
@@ -29,6 +30,13 @@ namespace WpfFileManager
         }
 
         public event EventHandler AvailableFunctionsChanged;
+        public event EventHandler<string> ShortcutPressed;
+
+        protected virtual void OnShortcutPressed(string e)
+        {
+            var handler = ShortcutPressed;
+            if (handler != null) handler(this, e);
+        }
 
         protected virtual void OnAvailableFunctionsChanged()
         {
@@ -160,14 +168,63 @@ namespace WpfFileManager
             get
             {
                 if (mOpenShortcutsView == null)
-                    mOpenShortcutsView = new DelegateCommand((param) => OpenView());
+                    mOpenShortcutsView = new DelegateCommand(param => OpenView());
                 return mOpenShortcutsView;
             }
         }
 
         private void OpenView()
         {
-            throw new NotImplementedException();
+            throw new Exception();
         }
+
+        private DelegateCommand mOnWindowKeyPressed;
+        public ICommand OnWindowKeyPressed
+        {
+            get
+            {
+                if (mOnWindowKeyPressed == null)
+                    mOnWindowKeyPressed = new DelegateCommand(KeyPressed);
+                return mOnWindowKeyPressed;
+            }
+
+        }
+
+        private void KeyPressed(object o)
+        {
+            var k = (KeyEventArgs)o;
+            CatchShortcut(k);
+        }
+
+        public void CatchShortcut(KeyEventArgs k)
+        {
+            k.Handled = true;
+            var key = (k.Key == Key.System ? k.SystemKey : k.Key);
+
+            if (key == Key.LeftShift || key == Key.RightShift
+                || key == Key.LeftCtrl || key == Key.RightCtrl
+                || key == Key.LeftAlt || key == Key.RightAlt
+                || key == Key.LWin || key == Key.RWin)
+            {
+                return;
+            }
+
+            var shortcutText = new StringBuilder();
+            if ((Keyboard.Modifiers & ModifierKeys.Control) != 0)
+            {
+                shortcutText.Append("Ctrl+");
+            }
+            if ((Keyboard.Modifiers & ModifierKeys.Shift) != 0)
+            {
+                shortcutText.Append("Shift+");
+            }
+            if ((Keyboard.Modifiers & ModifierKeys.Alt) != 0)
+            {
+                shortcutText.Append("Alt+");
+            }
+            shortcutText.Append(key.ToString());
+            OnShortcutPressed(shortcutText.ToString());
+        }
+
     }
 }

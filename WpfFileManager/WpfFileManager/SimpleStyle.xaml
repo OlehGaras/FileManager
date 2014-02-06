@@ -1,0 +1,20 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="LayoutRoot" TargetType="ListView">
+        <Style.Triggers>
+            <!--these are the triggers that make the code cursor jump from box 1 to box 2 to box 3.-->
+            <DataTrigger Binding="{Binding ElementName=CodeDigit1, Path=Text.Length}" Value="1">
+                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=CodeDigit2}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=CodeDigit2, Path=Text.Length}" Value="1">
+                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=CodeDigit3}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=CodeDigit3, Path=Text.Length}" Value="1">
+                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=CodeDigit4}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ElementName=CodeDigit4, Path=Text.Length}" Value="1">
+                <Setter Property="FocusManager.FocusedElement" Value="{Binding ElementName=ConnectButton}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>
