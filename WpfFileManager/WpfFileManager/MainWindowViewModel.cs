@@ -29,6 +29,11 @@ namespace WpfFileManager
             mFunctions.Add(action);
         }
 
+        public MainWindowViewModel()
+        {
+            AddAction(new ShortcutAction("StyleChanged",ChangeStyle));
+        }
+
         public event EventHandler AvailableFunctionsChanged;
         public event EventHandler<string> ShortcutPressed;
 
@@ -122,6 +127,24 @@ namespace WpfFileManager
                 throw new ArgumentNullException("content");
             }
             ShortCutPanel = content;
+        }
+
+        public void ChangeStyle()
+        {
+            OnStyleChanged();
+        }
+
+        public event EventHandler StyleChanged;
+
+        protected virtual void OnStyleChanged()
+        {
+            EventHandler handler = StyleChanged;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
+
+        public void SetStyle(string style)
+        {
+            throw new NotImplementedException();
         }
 
         private string mLeftCurrentDirectory = @"D:\";

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Input;
 using FileManager;
 
@@ -19,6 +21,7 @@ namespace testPlugin
         private readonly ICurrentDirectory mCurrentDirectory;
         private readonly Panel mPanel;
         private string mCurrentPanelDirectory;
+        private IViewController mViewController;
 
         private DelegateCommand mOnListItemKeyPressed;
 
@@ -60,13 +63,15 @@ namespace testPlugin
             }
         }
 
-        public DirectoryViewModel(ICurrentDirectory currentDirectory, Panel panel)
+        public DirectoryViewModel(ICurrentDirectory currentDirectory, IViewController viewController, Panel panel)
         {
             if (currentDirectory == null)
                 throw new ArgumentNullException("currentDirectory");
             mCurrentDirectory = currentDirectory;
             mCurrentDirectory.CurrentDirectoryChanged += CurrentDirectoryOnCurrentDirectoryChanged;
             mPanel = panel;
+            mViewController = viewController;
+            mViewController.StyleChanged += (sender, args) => ChangeStyle();
             mCurrentPanelDirectory = mPanel == Panel.Left ? mCurrentDirectory.LeftCurrentDirectory : mCurrentDirectory.RightCurrentDirectory;
             LoadDirectory(mCurrentPanelDirectory);
         }
@@ -142,6 +147,31 @@ namespace testPlugin
                     OnPropertyChanged("SelectedItem");
                 }
             }
+        }
+
+        private int mStyleIndex;
+        private string mStyle = "Style1";
+        public string Style
+        {
+            get { return mStyle; }
+            set
+            {
+                if (mStyle != value)
+                {
+                    mStyle = value;
+                    OnPropertyChanged("Style");
+                }
+            }
+        }
+
+        public void ChangeStyle()
+        {
+            Style = Style == "Style1" ? "Style2" : "Style1";
+        }
+
+        public void SetStyle(string style)
+        {
+            Style = style;
         }
     }
 }

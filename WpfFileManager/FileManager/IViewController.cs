@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 
 namespace FileManager
 {
@@ -7,5 +8,7 @@ namespace FileManager
         void SetLeftPanelContent(UserControl content);
         void SetRightPanelContent(UserControl content);
         void SetShortcutPanelContent(UserControl content);
+        void ChangeStyle();
+        event EventHandler StyleChanged;
     }
 }

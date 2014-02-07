@@ -4,36 +4,58 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:testPlugin="clr-namespace:testPlugin"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:l="clr-namespace:testPlugin"
              xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF45"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <DataTemplate x:Key="t1" DataType="{x:Type testPlugin:DirectoryInfo}">
+        <DataTemplate x:Key="DirectoryInfoDataTemplate"  DataType="{x:Type testPlugin:DirectoryInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="16" Height="16"/>
                 <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
-
-        <DataTemplate x:Key="t2" DataType="{x:Type testPlugin:DirectoryInfo}">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="{Binding Icon}" Width="32" Height="32"/>
-                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type testPlugin:DoublePointInfo}">
+        <DataTemplate x:Key="DoublePointInfoDataTemplate" DataType="{x:Type testPlugin:DoublePointInfo}">
             <TextBlock Text=".."/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type testPlugin:FileInfo}">
+        <DataTemplate x:Key="FileInfoDataTemplate" DataType="{x:Type testPlugin:FileInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="16" Height="16"/>
                 <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
+        
+        <DataTemplate x:Key="DirectoryInfoDataTemplate2"  DataType="{x:Type testPlugin:DirectoryInfo}">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding Icon}" Width="32" Height="32"/>
+                <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="DoublePointInfoDataTemplate2" DataType="{x:Type testPlugin:DoublePointInfo}">
+            <TextBlock Text=".."/>
+        </DataTemplate>
+        <DataTemplate x:Key="FileInfoDataTemplate2" DataType="{x:Type testPlugin:FileInfo}">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding Icon}" Width="32" Height="32"/>
+                <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+        
+        <l:PropertyDataTemplateSelector x:Key="Style1" 
+                                        DirectoryInfoDataTemplate="{StaticResource DirectoryInfoDataTemplate}" 
+                                        DoublePointInfoDataTemplate="{StaticResource DoublePointInfoDataTemplate}"
+                                        FileInfoDataTemplate="{StaticResource FileInfoDataTemplate}">
+            
+        </l:PropertyDataTemplateSelector>
+        <l:PropertyDataTemplateSelector x:Key="Style2" 
+                                        DirectoryInfoDataTemplate="{StaticResource DirectoryInfoDataTemplate2}" 
+                                        DoublePointInfoDataTemplate="{StaticResource DoublePointInfoDataTemplate2}"
+                                        FileInfoDataTemplate="{StaticResource FileInfoDataTemplate2}">
+
+        </l:PropertyDataTemplateSelector>
     </UserControl.Resources>
     <Grid>
-        <ListView ItemsSource="{Binding FileSystemInfo}" ItemTemplate="{StaticResource t1}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}">
+        <ListView ItemsSource="{Binding FileSystemInfo}" ItemTemplateSelector="{StaticResource  Style1}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}">
             <i:Interaction.Triggers>
                 <i:EventTrigger  EventName="KeyUp" >
                     <command:EventToCommand Command="{Binding OnListItemKeyPressed}" PassEventArgsToCommand="True"  />

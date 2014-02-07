@@ -23,6 +23,7 @@ namespace testPlugin
             mViewController = viewController;
             mCurrentDirectory = currentDirectory;
             mShotcutManager = shotcutManager;
+            
         }
 
         public Version PluginVersion { get { return new Version(1, 0); } }
@@ -30,27 +31,17 @@ namespace testPlugin
 
         public void Apply()
         {
-            var leftPanel = new DirectoryView(new DirectoryViewModel(mCurrentDirectory, Panel.Left));
-            var rightPanel = new DirectoryView(new DirectoryViewModel(mCurrentDirectory, Panel.Right));
+            var leftPanel = new DirectoryView(new DirectoryViewModel(mCurrentDirectory, mViewController, Panel.Left));
+            var rightPanel = new DirectoryView(new DirectoryViewModel(mCurrentDirectory,mViewController, Panel.Right));
             mViewController.SetLeftPanelContent(leftPanel);
             mViewController.SetRightPanelContent(rightPanel);
-            mShotcutManager.AddAction(new ShortcutAction
-                {
-                    Action = () =>
-                    {
-                        Console.WriteLine("HelloWorld");
-                        Console.Read();
-                    },
-                    Name = "HelloWorld Action"
-                });
-            mShotcutManager.AddAction(new ShortcutAction
-                {
-                    Action = () =>
-                        {
-                            Console.WriteLine("ByeWorld");
-                        },
-                    Name = "ByeWorld Action"
-                });
+            mShotcutManager.AddAction(new ShortcutAction("HelloWorld Action", () => Console.WriteLine("HelloWorld")));
+            mShotcutManager.AddAction(new ShortcutAction("ByeWorld Action", () => Console.WriteLine("ByeWorld")));
+        }
+
+        private void ChangeStyle()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -2,6 +2,12 @@
 
 namespace FileManager
 {
+    public enum Style
+    {
+        Style1 = 0,
+        Style2 = 1
+    }
+
     public class ViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

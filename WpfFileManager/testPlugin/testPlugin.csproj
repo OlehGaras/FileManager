@@ -72,6 +72,7 @@
     <Compile Include="IFileSystemInfo.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyDataTemplateSelector.cs" />
     <Compile Include="ShellManager.cs" />
     <Compile Include="SystemAPI.cs" />
   </ItemGroup>

@@ -10,5 +10,11 @@ namespace FileManager
 
         [ScriptIgnore]
         public Callback Action { get; set; }
+
+        public ShortcutAction(string name, Callback action)
+        {
+            Name = name;
+            Action = action;
+        }
     }
 }

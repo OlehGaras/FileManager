@@ -32,11 +32,11 @@ namespace ShotCutsPlugin
             mShotcutManager = shotcutManager;
             mShotcutManager.AvailableFunctionsChanged +=
                 (sender, args) =>
-                    {
-                        mCallbacks.AddRange(mShotcutManager.GetActions());
-                        OnPropertyChanged("CallBacks");
-                        Deserialize();
-                    };
+                {
+                    mCallbacks.AddRange(mShotcutManager.GetActions());
+                    OnPropertyChanged("CallBacks");
+                    Deserialize();
+                };
             mShotcutManager.ShortcutPressed += (sender, s) =>
                 {
                     var action = (from shortcut in Shortcuts where shortcut.ShortcutText == s select shortcut.CurrCallback).FirstOrDefault();
@@ -47,22 +47,25 @@ namespace ShotCutsPlugin
         private void Serialize()
         {
             var file = new FileStream("Shotcuts.txt", FileMode.Create);
-            var serializer = new JavaScriptSerializer() ;
+            var serializer = new JavaScriptSerializer();
             var json = serializer.Serialize(mShortcuts);
-            var writer = new StreamWriter(file) { AutoFlush = true};
+            var writer = new StreamWriter(file) { AutoFlush = true };
             writer.WriteLine(json);
             file.Close();
         }
 
         private void Deserialize()
         {
-            var file = new FileStream("Shotcuts.txt",FileMode.Open);
+            Stream file = null;
             try
             {
+                file = new FileStream("Shotcuts.txt", FileMode.Open);
                 var reader = new StreamReader(file);
                 var json = reader.ReadToEnd();
                 var deserializer = new JavaScriptSerializer();
-                var shortcuts =(ObservableCollection<Shortcut>)deserializer.Deserialize(json, typeof(ObservableCollection<Shortcut>));
+                var shortcuts =
+                    (ObservableCollection<Shortcut>)
+                    deserializer.Deserialize(json, typeof(ObservableCollection<Shortcut>));
                 foreach (var shortcut in shortcuts)
                 {
                     var i = Callbacks.IndexOf(Callbacks.Find(c => c.Name == shortcut.CurrCallback.Name));
@@ -74,9 +77,13 @@ namespace ShotCutsPlugin
             }
             catch (Exception e)
             {
-                file.Close();
+                if (file != null)
+                    file.Close();
             }
-            
+            finally
+            {
+            }
+
         }
 
         private ObservableCollection<Shortcut> mShortcuts = new ObservableCollection<Shortcut>();
@@ -192,7 +199,7 @@ namespace ShotCutsPlugin
             {
                 if (mAddNewShortcut == null)
                 {
-                    mAddNewShortcut = new DelegateCommand(param=>AddShortcut());
+                    mAddNewShortcut = new DelegateCommand(param => AddShortcut());
                 }
                 return mAddNewShortcut;
             }
@@ -201,7 +208,7 @@ namespace ShotCutsPlugin
         private void AddShortcut()
         {
             if (NewShortcutText != null && ComboSelectedItem != null && Callbacks != null)
-                mShortcuts.Add(new Shortcut(NewShortcutText,ComboSelectedItem,Callbacks));
+                mShortcuts.Add(new Shortcut(NewShortcutText, ComboSelectedItem, Callbacks));
             OnPropertyChanged("Shortcuts");
         }
 
@@ -212,7 +219,7 @@ namespace ShotCutsPlugin
             {
                 if (mSaveShortcuts == null)
                 {
-                    mSaveShortcuts = new DelegateCommand(param=> Serialize());
+                    mSaveShortcuts = new DelegateCommand(param => Serialize());
                 }
                 return mSaveShortcuts;
             }
@@ -225,7 +232,7 @@ namespace ShotCutsPlugin
             {
                 if (mDeleteShortcut == null)
                 {
-                    mDeleteShortcut = new DelegateCommand(param =>DeleteShC());
+                    mDeleteShortcut = new DelegateCommand(param => DeleteShC());
                 }
                 return mDeleteShortcut;
             }
