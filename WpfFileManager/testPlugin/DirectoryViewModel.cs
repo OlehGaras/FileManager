@@ -71,7 +71,6 @@ namespace testPlugin
             mCurrentDirectory.CurrentDirectoryChanged += CurrentDirectoryOnCurrentDirectoryChanged;
             mPanel = panel;
             mViewController = viewController;
-            mViewController.StyleChanged += (sender, args) => ChangeStyle();
             mCurrentPanelDirectory = mPanel == Panel.Left ? mCurrentDirectory.LeftCurrentDirectory : mCurrentDirectory.RightCurrentDirectory;
             LoadDirectory(mCurrentPanelDirectory);
         }
@@ -166,7 +165,8 @@ namespace testPlugin
 
         public void ChangeStyle()
         {
-            Style = Style == "Style1" ? "Style2" : "Style1";
+            mStyle = Style == "Style1" ? "Style2" : "Style1";
+            OnPropertyChanged("Style");
         }
 
         public void SetStyle(string style)

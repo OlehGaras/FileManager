@@ -7,8 +7,7 @@ namespace FileManager
     {
         void SetLeftPanelContent(UserControl content);
         void SetRightPanelContent(UserControl content);
-        void SetShortcutPanelContent(UserControl content);
-        void ChangeStyle();
-        event EventHandler StyleChanged;
+        Guid AddToolPanel(UserControl content, string title);
+        void CloseToolPanel(Guid guid);
     }
 }

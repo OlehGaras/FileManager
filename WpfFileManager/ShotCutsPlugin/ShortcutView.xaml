@@ -31,7 +31,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </TextBox>
-            <ComboBox Grid.Column="1" Margin="3" ItemsSource="{Binding Callbacks}" HorizontalAlignment="Stretch" SelectedItem ="{Binding ComboSelectedItem}">
+            <ComboBox Grid.Column="1" Margin="3" ItemsSource="{Binding Callbacks, UpdateSourceTrigger=LostFocus}" HorizontalAlignment="Stretch" SelectedItem ="{Binding ComboSelectedItem}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type fileManager:ShortcutAction}">
                         <TextBlock Text="{Binding Name}"/>
@@ -58,13 +58,18 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" TextAlignment="Center" Margin="5" Padding="2" Text="{Binding ShortcutText}" HorizontalAlignment="Stretch" Background="Gainsboro" ></TextBlock>
-                        <ComboBox Grid.Column="1" Margin="5,5,35,5" ItemsSource="{Binding Functions}" HorizontalAlignment="Stretch"  SelectedItem ="{Binding CurrCallback}" >
+                        <TextBlock Name="shortcutText" Grid.Column="0" TextAlignment="Center" Margin="5" Padding="2" Text="{Binding ShortcutText}" HorizontalAlignment="Stretch" Background="Gainsboro" ></TextBlock>
+                        <ComboBox Grid.Column="1" Margin="5,5,35,5" ItemsSource="{Binding Path= DataContext.Callbacks, UpdateSourceTrigger=LostFocus, Source={x:Reference Name=addShortcut}}" HorizontalAlignment="Stretch"  SelectedItem ="{Binding ShortcutAction}" >
                             <ComboBox.ItemTemplate >
                                 <DataTemplate DataType="{x:Type fileManager:ShortcutAction}">
                                     <TextBlock Text="{Binding Name}"/>
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger  EventName="SelectionChanged">
+                                    <command:EventToCommand Command="{Binding  Path= DataContext.UpdateShortcut, Source={x:Reference Name=addShortcut}}" CommandParameter="{Binding ElementName=shortcutText, Path=Text}"  />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
                         </ComboBox>
                     </Grid>
                 </DataTemplate>

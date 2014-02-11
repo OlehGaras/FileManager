@@ -1,52 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Input;
 using FileManager;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace WpfFileManager
 {
     [Export(typeof(IViewController))]
     [Export(typeof(ICurrentDirectory))]
-    [Export(typeof(IShotcutManager))]
     [Export(typeof(MainWindowViewModel))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class MainWindowViewModel : ViewModelBase, IViewController, ICurrentDirectory ,IShotcutManager
+    public class MainWindowViewModel : ViewModelBase, IViewController, ICurrentDirectory
     {
+        private readonly IShortcutManager mShortcutManager;
         private Version AppVersion { get { return new Version(1, 0); } }
-
-        private readonly List<ShortcutAction> mFunctions = new List<ShortcutAction>();
-
-        public List<ShortcutAction> GetActions()
+        private Dictionary<Guid, LayoutAnchorable> mToolsWindows = new Dictionary<Guid, LayoutAnchorable>();
+            
+        [ImportingConstructor]
+        public MainWindowViewModel(IShortcutManager shortcutManager)
         {
-            return mFunctions;
-        }
-
-        public void AddAction(ShortcutAction action)
-        {
-            mFunctions.Add(action);
-        }
-
-        public MainWindowViewModel()
-        {
-            AddAction(new ShortcutAction("StyleChanged",ChangeStyle));
-        }
-
-        public event EventHandler AvailableFunctionsChanged;
-        public event EventHandler<string> ShortcutPressed;
-
-        protected virtual void OnShortcutPressed(string e)
-        {
-            var handler = ShortcutPressed;
-            if (handler != null) handler(this, e);
-        }
-
-        protected virtual void OnAvailableFunctionsChanged()
-        {
-            var handler = AvailableFunctionsChanged;
-            if (handler != null) handler(this, EventArgs.Empty);
+            if (shortcutManager == null) 
+                throw new ArgumentNullException("shortcutManager");
+            mShortcutManager = shortcutManager;
         }
 
         private UserControl mLeftPanel; 
@@ -86,10 +65,8 @@ namespace WpfFileManager
                 if (plugin.AppVersion == AppVersion)
                 {
                     plugin.Apply();  
-                    
                 }
             }
-            OnAvailableFunctionsChanged();
         }
 
         private UserControl mShortCutPanel;
@@ -102,6 +79,20 @@ namespace WpfFileManager
                 {
                     mShortCutPanel = value;
                     OnPropertyChanged("ShortCutPanel");
+                }
+            }
+        }
+        
+        private ObservableCollection<LayoutAnchorable> mTools;
+        public ObservableCollection<LayoutAnchorable> Tools
+        {
+            get { return mTools; }
+            set
+            {
+                if (mTools != value)
+                {
+                    mTools = value;
+                    OnPropertyChanged("Tools");
                 }
             }
         }
@@ -120,31 +111,37 @@ namespace WpfFileManager
             RightPanel = content;
         }
 
-        public void SetShortcutPanelContent(UserControl content)
+        public Guid AddToolPanel(UserControl content, string title)
         {
             if (content == null)
             {
                 throw new ArgumentNullException("content");
             }
-            ShortCutPanel = content;
+            if (Tools != null)
+            {
+                var layoutAnchorable = new LayoutAnchorable
+                    {
+                        Content = content,
+                        Title = title
+                    };
+
+                var guid = Guid.NewGuid();
+                Tools.Add(layoutAnchorable);
+                mToolsWindows.Add(guid, layoutAnchorable);
+                return guid;
+            }
+            return default(Guid);
         }
 
-        public void ChangeStyle()
+        public void CloseToolPanel(Guid guid)
         {
-            OnStyleChanged();
-        }
-
-        public event EventHandler StyleChanged;
-
-        protected virtual void OnStyleChanged()
-        {
-            EventHandler handler = StyleChanged;
-            if (handler != null) handler(this, EventArgs.Empty);
-        }
-
-        public void SetStyle(string style)
-        {
-            throw new NotImplementedException();
+            if (mToolsWindows.ContainsKey(guid))
+            {
+                var anchorable = mToolsWindows[guid];
+                mToolsWindows.Remove(guid);
+                if (Tools != null)
+                    Tools.Remove(anchorable);
+            }
         }
 
         private string mLeftCurrentDirectory = @"D:\";
@@ -246,8 +243,12 @@ namespace WpfFileManager
                 shortcutText.Append("Alt+");
             }
             shortcutText.Append(key.ToString());
-            OnShortcutPressed(shortcutText.ToString());
+            var s = shortcutText.ToString();
+            var actionByKey = mShortcutManager.GetActionByKey(s);
+            if (actionByKey != null)
+            {
+                actionByKey.Action();
+            }
         }
-
     }
 }

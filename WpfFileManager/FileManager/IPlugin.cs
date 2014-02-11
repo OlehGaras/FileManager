@@ -4,10 +4,11 @@ namespace FileManager
 {
     
     public delegate void Callback();
-    public interface IPlugin
+    public interface IPlugin : IDisposable
     {
         Version PluginVersion { get; }
         Version AppVersion { get; }
         void Apply();
+
     }
 }

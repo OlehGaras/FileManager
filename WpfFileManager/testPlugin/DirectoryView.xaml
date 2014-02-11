@@ -24,7 +24,7 @@
                 <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
-        
+
         <DataTemplate x:Key="DirectoryInfoDataTemplate2"  DataType="{x:Type testPlugin:DirectoryInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="32" Height="32"/>
@@ -40,12 +40,41 @@
                 <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
-        
+
+        <DataTemplate x:Key="DirectoryInfoDataTemplate3"  DataType="{x:Type testPlugin:DirectoryInfo}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="{Binding Icon}" Width="32" Height="32" Grid.Column="0"/>
+                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" Grid.Column="1"/>
+                <TextBlock Text="{Binding  Extention}" VerticalAlignment="Center" Grid.Column="2"/>
+                <TextBlock Text="" VerticalAlignment="Center" Grid.Column="3"/>
+                <TextBlock Text="{Binding  LastWritetime}" VerticalAlignment="Center" Grid.Column="4"/>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="DoublePointInfoDataTemplate3" DataType="{x:Type testPlugin:DoublePointInfo}">
+            <TextBlock Text=".."/>
+        </DataTemplate>
+        <DataTemplate x:Key="FileInfoDataTemplate3" DataType="{x:Type testPlugin:FileInfo}">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding Icon}" Width="32" Height="32"/>
+                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding  Extention}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding  Length}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding  LastWritetime}" VerticalAlignment="Center"/>
+            </StackPanel>
+        </DataTemplate>
+
         <l:PropertyDataTemplateSelector x:Key="Style1" 
                                         DirectoryInfoDataTemplate="{StaticResource DirectoryInfoDataTemplate}" 
                                         DoublePointInfoDataTemplate="{StaticResource DoublePointInfoDataTemplate}"
                                         FileInfoDataTemplate="{StaticResource FileInfoDataTemplate}">
-            
+
         </l:PropertyDataTemplateSelector>
         <l:PropertyDataTemplateSelector x:Key="Style2" 
                                         DirectoryInfoDataTemplate="{StaticResource DirectoryInfoDataTemplate2}" 
@@ -53,9 +82,31 @@
                                         FileInfoDataTemplate="{StaticResource FileInfoDataTemplate2}">
 
         </l:PropertyDataTemplateSelector>
+
+        <l:PropertyDataTemplateSelector x:Key="Style3" 
+                                        DirectoryInfoDataTemplate="{StaticResource DirectoryInfoDataTemplate3}" 
+                                        DoublePointInfoDataTemplate="{StaticResource DoublePointInfoDataTemplate3}"
+                                        FileInfoDataTemplate="{StaticResource FileInfoDataTemplate3}">
+
+        </l:PropertyDataTemplateSelector>
+
     </UserControl.Resources>
     <Grid>
-        <ListView ItemsSource="{Binding FileSystemInfo}" ItemTemplateSelector="{StaticResource  Style1}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}">
+        <ListView ItemsSource="{Binding FileSystemInfo}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}">
+            <ListView.Style>
+                <Style TargetType="{x:Type ListView}">
+                    <Setter Property="ItemTemplateSelector" Value="{StaticResource Style1}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Style, UpdateSourceTrigger=PropertyChanged}" Value ="Style1">
+                            <Setter Property="ItemTemplateSelector" Value="{StaticResource Style1}"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Style, UpdateSourceTrigger=PropertyChanged}" Value ="Style2">
+                            <Setter Property="ItemTemplateSelector" Value="{StaticResource Style2}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.Style>
             <i:Interaction.Triggers>
                 <i:EventTrigger  EventName="KeyUp" >
                     <command:EventToCommand Command="{Binding OnListItemKeyPressed}" PassEventArgsToCommand="True"  />

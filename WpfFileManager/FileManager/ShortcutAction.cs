@@ -9,7 +9,10 @@ namespace FileManager
         public string Name { get; set; }
 
         [ScriptIgnore]
-        public Callback Action { get; set; }
+        public Callback Action { get; private set; }
+
+        public ShortcutAction()
+        {}
 
         public ShortcutAction(string name, Callback action)
         {

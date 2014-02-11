@@ -9,21 +9,21 @@ namespace testPlugin
     {
         private readonly IViewController mViewController;
         private readonly ICurrentDirectory mCurrentDirectory;
-        private readonly IShotcutManager mShotcutManager;
+        private readonly IShortcutManager mShortcutManager;
 
         [ImportingConstructor]
-        public Plugin(IViewController viewController, ICurrentDirectory currentDirectory, IShotcutManager shotcutManager)
+        public Plugin(IViewController viewController, ICurrentDirectory currentDirectory, IShortcutManager shortcutManager)
         {
             if (viewController == null)
                 throw new ArgumentNullException("viewController");
             if (currentDirectory == null)
                 throw new ArgumentNullException("currentDirectory");
-            if (shotcutManager == null)
-                throw new ArgumentNullException("shotcutManager");
+            if (shortcutManager == null)
+                throw new ArgumentNullException("shortcutManager");
             mViewController = viewController;
             mCurrentDirectory = currentDirectory;
-            mShotcutManager = shotcutManager;
-            
+            mShortcutManager = shortcutManager;
+
         }
 
         public Version PluginVersion { get { return new Version(1, 0); } }
@@ -31,17 +31,23 @@ namespace testPlugin
 
         public void Apply()
         {
-            var leftPanel = new DirectoryView(new DirectoryViewModel(mCurrentDirectory, mViewController, Panel.Left));
-            var rightPanel = new DirectoryView(new DirectoryViewModel(mCurrentDirectory,mViewController, Panel.Right));
+            var leftDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory, mViewController, Panel.Left);
+            var leftPanel = new DirectoryView(leftDirectoryViewModel);
+            var rightDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory, mViewController, Panel.Right);
+            var rightPanel = new DirectoryView(rightDirectoryViewModel);
             mViewController.SetLeftPanelContent(leftPanel);
             mViewController.SetRightPanelContent(rightPanel);
-            mShotcutManager.AddAction(new ShortcutAction("HelloWorld Action", () => Console.WriteLine("HelloWorld")));
-            mShotcutManager.AddAction(new ShortcutAction("ByeWorld Action", () => Console.WriteLine("ByeWorld")));
+            mShortcutManager.AddAction(new ShortcutAction("HelloWorld Action", () => Console.WriteLine("HelloWorld")));
+            mShortcutManager.AddAction(new ShortcutAction("ByeWorld Action", () => Console.WriteLine("ByeWorld")));
+            mShortcutManager.AddAction(new ShortcutAction("Change Style", () =>
+            {
+                leftDirectoryViewModel.ChangeStyle();
+                rightDirectoryViewModel.ChangeStyle();
+            }
+            ));
         }
 
-        private void ChangeStyle()
-        {
-            throw new NotImplementedException();
-        }
+        public void Dispose()
+        {}
     }
 }

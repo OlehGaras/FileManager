@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Web.Script.Serialization;
 using FileManager;
 
 namespace ShotCutsPlugin
@@ -9,25 +7,26 @@ namespace ShotCutsPlugin
     public class Shortcut
     {
         public string ShortcutText { get; set; }
-        [ScriptIgnore]
-        public List<ShortcutAction> Functions { get; set; }
 
-        public ShortcutAction CurrCallback { get; set; }
+        private ShortcutAction mAction;
+        public ShortcutAction ShortcutAction {
+            get { return mAction; }
+            set { mAction = value; } 
+        }
 
         public Shortcut()
         {
         }
 
-        public Shortcut(string text, List<ShortcutAction> registeredCallbacks)
+        public Shortcut(string text)
         {
             ShortcutText = text;
-            Functions = registeredCallbacks;
         }
 
-        public Shortcut(string text, ShortcutAction currCallback, List<ShortcutAction> registeredCallbacks)
-            : this(text, registeredCallbacks)
+        public Shortcut(string text, ShortcutAction currCallback)
+            : this(text)
         {
-            CurrCallback = currCallback;
+            ShortcutAction = currCallback;
         }
     }
 }

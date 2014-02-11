@@ -4,12 +4,15 @@
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF45"
+        xmlns:wpfFileManager="clr-namespace:WpfFileManager"
         Title="MainWindow" Height="400" Width="525" MinHeight="250" MinWidth="400">
     <i:Interaction.Triggers>
         <i:EventTrigger  EventName="KeyUp" >
             <command:EventToCommand Command="{Binding OnWindowKeyPressed}" PassEventArgsToCommand="True"  />
         </i:EventTrigger>
     </i:Interaction.Triggers>
+    <Window.Resources>
+    </Window.Resources>
     <Grid >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -21,9 +24,10 @@
                 <MenuItem Name="exit" Header="Exit">
                 </MenuItem>
             </MenuItem>
+            <wpfFileManager:Proxy In="{Binding ElementName=view, Path=Items}" Out="{Binding Tools}"/>
             <MenuItem Name="view" Margin="3" Padding="3" Width="Auto" Height="Auto"  Header="View">
-                <MenuItem Name="shortcuts" Header="ShortCuts" Command="{Binding OpenShortcutsView}">
-                </MenuItem>
+                <!--<MenuItem Name="shortcuts" Header="ShortCuts" Command="{Binding OpenShortcutsView}">
+                </MenuItem>-->
             </MenuItem>
             <MenuItem Name="help" Margin="3" Padding="3"  Width="Auto" Height="Auto"  Header="Help">
             </MenuItem>
@@ -38,19 +42,13 @@
             <ContentControl Name = "rightPanel" Grid.Column="1" Content="{Binding RightPanel}"/>
             <GridSplitter Grid.Column="0" Width="5"/>
         </Grid>
+
+        <wpfFileManager:Proxy In="{Binding ElementName=toolsPane, Path=Children}" Out="{Binding Tools}"/>
         <xcad:DockingManager x:Name="dockingManager" Grid.Row="2">
             <xcad:LayoutRoot >
                 <xcad:LayoutPanel Orientation="Vertical" >
-                    <xcad:LayoutAnchorablePaneGroup DockWidth="150"   Orientation="Horizontal">
-                        <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable Title="Shortcut">
-                                <ContentControl Name = "shortCutPanel" Content="{Binding ShortCutPanel}"/>
-                                <!--<TextBox/>-->
-                            </xcad:LayoutAnchorable>
-                            <xcad:LayoutAnchorable Title="Tool 2">
-                                <TextBox/>
-                            </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorablePane>
+                    <xcad:LayoutAnchorablePaneGroup DockWidth="150" Orientation="Horizontal">
+                        <xcad:LayoutAnchorablePane x:Name="toolsPane"/>
                     </xcad:LayoutAnchorablePaneGroup>
                 </xcad:LayoutPanel>
                 <xcad:LayoutRoot.BottomSide>

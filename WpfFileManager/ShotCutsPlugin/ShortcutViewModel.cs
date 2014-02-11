@@ -2,46 +2,55 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Web.Script.Serialization;
 using System.Windows.Input;
 using FileManager;
+using System.Linq;
 
 namespace ShotCutsPlugin
 {
     public class ShortcutViewModel : ViewModelBase
     {
-        private readonly IShotcutManager mShotcutManager;
-        private List<ShortcutAction> mCallbacks = new List<ShortcutAction>();
+        private readonly IShortcutManager mShortcutManager;
+        private ObservableCollection<Shortcut> mDeserializedShortcuts;
+
         public List<ShortcutAction> Callbacks
         {
-            get { return mCallbacks; }
-            set
-            {
-                if (mCallbacks != value)
-                {
-                    mCallbacks = value;
-                    OnPropertyChanged("Callbacks");
-                }
-            }
+            get { return mShortcutManager.GetActions(); }
         }
 
-        public ShortcutViewModel(IShotcutManager shotcutManager)
+        public ShortcutViewModel(IShortcutManager shortcutManager)
         {
-            mShotcutManager = shotcutManager;
-            mShotcutManager.AvailableFunctionsChanged +=
-                (sender, args) =>
+            mShortcutManager = shortcutManager;
+            shortcutManager.ActionsChanged += ShortcutManagerOnActionsChanged;
+            Deserialize();
+            ReloadShortcutsMapping();
+        }
+
+        private void ShortcutManagerOnActionsChanged(object sender, EventArgs eventArgs)
+        {
+            ReloadShortcutsMapping();
+        }
+
+        private void ReloadShortcutsMapping()
+        {
+            if (mDeserializedShortcuts == null)
+                return;
+
+            Shortcuts = new ObservableCollection<Shortcut>();
+            foreach (var shortcut in mDeserializedShortcuts)
+            {
+                var callback =
+                    Callbacks.FirstOrDefault(
+                        c => string.Compare(c.Name, shortcut.ShortcutAction.Name, StringComparison.OrdinalIgnoreCase) == 0);
+                if (callback != null)
                 {
-                    mCallbacks.AddRange(mShotcutManager.GetActions());
-                    OnPropertyChanged("CallBacks");
-                    Deserialize();
-                };
-            mShotcutManager.ShortcutPressed += (sender, s) =>
-                {
-                    var action = (from shortcut in Shortcuts where shortcut.ShortcutText == s select shortcut.CurrCallback).FirstOrDefault();
-                    if (action != null) action.Action();
-                };
+                    shortcut.ShortcutAction = callback;
+                    Shortcuts.Add(shortcut);
+                    mShortcutManager.MapAction(shortcut.ShortcutText, callback);
+                }
+            }
         }
 
         private void Serialize()
@@ -63,27 +72,14 @@ namespace ShotCutsPlugin
                 var reader = new StreamReader(file);
                 var json = reader.ReadToEnd();
                 var deserializer = new JavaScriptSerializer();
-                var shortcuts =
-                    (ObservableCollection<Shortcut>)
-                    deserializer.Deserialize(json, typeof(ObservableCollection<Shortcut>));
-                foreach (var shortcut in shortcuts)
-                {
-                    var i = Callbacks.IndexOf(Callbacks.Find(c => c.Name == shortcut.CurrCallback.Name));
-                    shortcut.CurrCallback = Callbacks[i];
-                    shortcut.Functions = Callbacks;
-                }
-                Shortcuts = shortcuts;
+                mDeserializedShortcuts = (ObservableCollection<Shortcut>)deserializer.Deserialize(json, typeof(ObservableCollection<Shortcut>));              
                 file.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (file != null)
                     file.Close();
             }
-            finally
-            {
-            }
-
         }
 
         private ObservableCollection<Shortcut> mShortcuts = new ObservableCollection<Shortcut>();
@@ -205,10 +201,37 @@ namespace ShotCutsPlugin
             }
         }
 
+        private DelegateCommand mUpdateShortcut;
+        public ICommand UpdateShortcut
+        {
+            get
+            {
+                if (mUpdateShortcut == null)
+                {
+                    mUpdateShortcut = new DelegateCommand(param => UpdateShortcutFunc(param));
+                }
+                return mUpdateShortcut;
+            }
+        }
+
+        private void UpdateShortcutFunc(object o)
+        {
+            var text = o as string;
+            var shortcut = text == null? null : 
+                Shortcuts.FirstOrDefault(s => string.Compare(s.ShortcutText, text, StringComparison.OrdinalIgnoreCase) == 0);
+            if (shortcut != null)
+            {
+                mShortcutManager.UnMapAction(shortcut.ShortcutText);
+                mShortcutManager.MapAction(shortcut.ShortcutText, shortcut.ShortcutAction);
+            }
+        }
+
         private void AddShortcut()
         {
-            if (NewShortcutText != null && ComboSelectedItem != null && Callbacks != null)
-                mShortcuts.Add(new Shortcut(NewShortcutText, ComboSelectedItem, Callbacks));
+            if (NewShortcutText != null && ComboSelectedItem != null && Callbacks != null && mShortcutManager.MapAction(NewShortcutText, ComboSelectedItem))
+            {
+                mShortcuts.Add(new Shortcut(NewShortcutText, ComboSelectedItem));
+            }
             OnPropertyChanged("Shortcuts");
         }
 
@@ -219,7 +242,11 @@ namespace ShotCutsPlugin
             {
                 if (mSaveShortcuts == null)
                 {
-                    mSaveShortcuts = new DelegateCommand(param => Serialize());
+                    mSaveShortcuts = new DelegateCommand(param =>
+                        {
+                            Serialize();
+                            Deserialize();
+                        });
                 }
                 return mSaveShortcuts;
             }
@@ -240,9 +267,9 @@ namespace ShotCutsPlugin
 
         private void DeleteShC()
         {
-            mShortcuts.Remove(ListSelectedItem);
-            OnPropertyChanged("Shortcuts");
+            var listSelectedItem = ListSelectedItem;
+            mShortcuts.Remove(listSelectedItem);
+            mShortcutManager.UnMapAction(listSelectedItem.ShortcutText);
         }
     }
-
 }

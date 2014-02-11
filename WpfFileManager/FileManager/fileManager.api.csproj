@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DelegateCommand.cs" />
-    <Compile Include="IShotcutManager.cs" />
+    <Compile Include="IShortcutManager.cs" />
     <Compile Include="ICurrentDirectory.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="IViewController.cs" />
