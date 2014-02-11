@@ -26,11 +26,15 @@ namespace testPlugin
 
         }
 
+        public Guid PluginGuid { get; private set; }
+        public Guid PluginViewGuid { get; private set; }
+
         public Version PluginVersion { get { return new Version(1, 0); } }
         public Version AppVersion { get { return new Version(1, 0); } }
-
-        public void Apply()
+        public void Apply(Guid pluginGuid)
         {
+            PluginGuid = pluginGuid;
+
             var leftDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory, mViewController, Panel.Left);
             var leftPanel = new DirectoryView(leftDirectoryViewModel);
             var rightDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory, mViewController, Panel.Right);
@@ -48,6 +52,8 @@ namespace testPlugin
         }
 
         public void Dispose()
-        {}
+        {
+            mViewController.CloseToolPanel(PluginViewGuid);
+        }
     }
 }

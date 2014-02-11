@@ -64,7 +64,7 @@ namespace FileManager
             {
                 return mContainer.GetExportedValue<TService>();
             }
-            catch (Exception)
+            catch (Exception e )
             {
                 throw new Exception("Type was not found");
             }

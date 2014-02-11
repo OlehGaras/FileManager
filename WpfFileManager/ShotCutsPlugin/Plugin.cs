@@ -10,7 +10,9 @@ namespace ShotCutsPlugin
     {
         private readonly IViewController mViewController;
         private readonly IShortcutManager mAvailableFunctions;
-        private Guid mGuid;
+
+        public Guid PluginGuid { get; private set; }
+        public Guid PluginViewGuid { get; private set; }
 
         public Version PluginVersion {
             get
@@ -24,7 +26,6 @@ namespace ShotCutsPlugin
                 return new Version(1,0);
             }
         }
-
 
         [ImportingConstructor]
         public Plugin(IViewController viewController,IShortcutManager availableFunctions)
@@ -40,16 +41,17 @@ namespace ShotCutsPlugin
             return new List<Callback>();
         }
 
-        public void Apply()
+        public void Apply(Guid pluginGuid)
         {
-            var shortcuts = new Shortcuts();
+            PluginGuid = pluginGuid;
+
             var shortcutPanel = new ShortcutView(new ShortcutViewModel(mAvailableFunctions));
-            mGuid = mViewController.AddToolPanel(shortcutPanel, "Shortcuts");
+            PluginViewGuid = mViewController.AddToolPanel(shortcutPanel, "Shortcuts");
         }
 
         public void Dispose()
         {
-            mViewController.CloseToolPanel(mGuid);
+            mViewController.CloseToolPanel(PluginViewGuid);
         }
     }
 }

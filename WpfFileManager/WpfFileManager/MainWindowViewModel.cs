@@ -19,16 +19,18 @@ namespace WpfFileManager
         private readonly IShortcutManager mShortcutManager;
         private Version AppVersion { get { return new Version(1, 0); } }
         private Dictionary<Guid, LayoutAnchorable> mToolsWindows = new Dictionary<Guid, LayoutAnchorable>();
-            
+        private Dictionary<LayoutAnchorable, Guid> mWindowsTools = new Dictionary<LayoutAnchorable, Guid>();
+        private Dictionary<Guid, Guid> mPluginsView = new Dictionary<Guid, Guid>();
+
         [ImportingConstructor]
         public MainWindowViewModel(IShortcutManager shortcutManager)
         {
-            if (shortcutManager == null) 
+            if (shortcutManager == null)
                 throw new ArgumentNullException("shortcutManager");
             mShortcutManager = shortcutManager;
         }
 
-        private UserControl mLeftPanel; 
+        private UserControl mLeftPanel;
         public UserControl LeftPanel
         {
             get { return mLeftPanel; }
@@ -64,7 +66,10 @@ namespace WpfFileManager
             {
                 if (plugin.AppVersion == AppVersion)
                 {
-                    plugin.Apply();  
+                    var pluginGuid = Guid.NewGuid();
+                    plugin.Apply(pluginGuid);
+
+                    mPluginsView.Add(pluginGuid, plugin.PluginViewGuid);
                 }
             }
         }
@@ -82,7 +87,21 @@ namespace WpfFileManager
                 }
             }
         }
-        
+
+        private ObservableCollection<LayoutAnchorable> mMenuItems = new ObservableCollection<LayoutAnchorable>();
+        public ObservableCollection<LayoutAnchorable> MenuItems
+        {
+            get { return mMenuItems; }
+            set
+            {
+                if (mMenuItems != value)
+                {
+                    mMenuItems = value;
+                    OnPropertyChanged("MenuItems");
+                }
+            }
+        }
+
         private ObservableCollection<LayoutAnchorable> mTools;
         public ObservableCollection<LayoutAnchorable> Tools
         {
@@ -117,17 +136,19 @@ namespace WpfFileManager
             {
                 throw new ArgumentNullException("content");
             }
-            if (Tools != null)
+            if (Tools != null && MenuItems != null)
             {
                 var layoutAnchorable = new LayoutAnchorable
                     {
                         Content = content,
                         Title = title
                     };
-
                 var guid = Guid.NewGuid();
                 Tools.Add(layoutAnchorable);
+                MenuItems.Add(layoutAnchorable);
                 mToolsWindows.Add(guid, layoutAnchorable);
+
+                mWindowsTools.Add(layoutAnchorable, guid);
                 return guid;
             }
             return default(Guid);
@@ -182,22 +203,6 @@ namespace WpfFileManager
             if (handler != null) handler(this, EventArgs.Empty);
         }
 
-        private DelegateCommand mOpenShortcutsView;
-        public ICommand OpenShortcutsView
-        {
-            get
-            {
-                if (mOpenShortcutsView == null)
-                    mOpenShortcutsView = new DelegateCommand(param => OpenView());
-                return mOpenShortcutsView;
-            }
-        }
-
-        private void OpenView()
-        {
-            throw new Exception();
-        }
-
         private DelegateCommand mOnWindowKeyPressed;
         public ICommand OnWindowKeyPressed
         {
@@ -248,6 +253,31 @@ namespace WpfFileManager
             if (actionByKey != null)
             {
                 actionByKey.Action();
+            }
+        }
+
+        private DelegateCommand mOnMenuItemPressed;
+        public ICommand OnMenuItemPressed
+        {
+            get
+            {
+                if (mOnMenuItemPressed == null)
+                {
+                    mOnMenuItemPressed = new DelegateCommand(param => OpenView(param));
+                }
+                return mOnMenuItemPressed;
+            }
+        }
+
+        private void OpenView(object o)
+        {
+            var layoutAnchorable = o as LayoutAnchorable;
+            if (layoutAnchorable != null)
+            {
+                if (mWindowsTools.ContainsKey(layoutAnchorable) && !Tools.Contains(layoutAnchorable))
+                {
+                    Tools.Add(layoutAnchorable);
+                }
             }
         }
     }
