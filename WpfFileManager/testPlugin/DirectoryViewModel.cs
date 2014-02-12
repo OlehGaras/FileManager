@@ -39,17 +39,19 @@ namespace testPlugin
         {
             var k = o as KeyEventArgs;
             var m = o as MouseEventArgs;
-            if (k != null && k.Key == Key.Return && SelectedItem is DirectoryInfo)
+            if (k != null && k.Key == Key.Return)
             {
-                ChangeDirectory();
+                if (SelectedItem is DirectoryInfo)
+                    ChangeDirectory();
+                if (SelectedItem is FileInfo)
+                    System.Diagnostics.Process.Start(SelectedItem.Path);
             }
-            if (m != null && m.LeftButton == MouseButtonState.Pressed && SelectedItem is DirectoryInfo)
+            if (m != null && m.LeftButton == MouseButtonState.Pressed)
             {
-                ChangeDirectory();
-            }
-            if (SelectedItem is FileInfo)
-            {
-                System.Diagnostics.Process.Start(SelectedItem.Path);
+                if (SelectedItem is DirectoryInfo)
+                    ChangeDirectory();
+                if (SelectedItem is FileInfo)
+                    System.Diagnostics.Process.Start(SelectedItem.Path);     
             }
         }
 
@@ -75,15 +77,15 @@ namespace testPlugin
             }
         }
 
-        public DirectoryViewModel(ICurrentDirectory currentDirectory,IErrorManager errorManager, Panel panel)
+        public DirectoryViewModel(ICurrentDirectory currentDirectory, IErrorManager errorManager, Panel panel)
         {
             if (currentDirectory == null)
                 throw new ArgumentNullException("currentDirectory");
             mCurrentDirectory = currentDirectory;
             mCurrentDirectory.CurrentDirectoryChanged += CurrentDirectoryOnCurrentDirectoryChanged;
 
-            if(errorManager == null)
-                throw  new ArgumentNullException("errorManager");
+            if (errorManager == null)
+                throw new ArgumentNullException("errorManager");
             mErrorManager = errorManager;
 
             mPanel = panel;
