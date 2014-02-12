@@ -12,35 +12,34 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Window.Resources>
+        <DataTemplate x:Key="MenuItemDataTemplate" DataType="{x:Type xcad:LayoutAnchorable}">
+            <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <TextBlock Name="MenuItemText" Text="{Binding Title}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger  EventName="MouseLeftButtonUp">
+                        <command:EventToCommand  Command="{Binding Path=DataContext.OnMenuItemPressed, Source={x:Reference Name=Main}}" CommandParameter="{Binding ElementName=MenuItemText, Path=DataContext}" PassEventArgsToCommand="True"  />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Border>
+        </DataTemplate>
     </Window.Resources>
+    
     <Grid Name="main" >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*" MinHeight="100"/>
         </Grid.RowDefinitions>
-        <Menu Name="menu" HorizontalAlignment="Stretch" Grid.Row="0" VerticalAlignment="Stretch" Width="Auto">
+        <Menu Name="menu" HorizontalAlignment="Stretch" Grid.Row="0" VerticalAlignment="Stretch" Width="Auto">          
             <MenuItem Name="file" Margin="3" Padding="3" Width="Auto" Height="Auto"  Header="File">
                 <MenuItem Name="exit" Header="Exit">
                 </MenuItem>
             </MenuItem>
-            <MenuItem Name="view" Margin="3" Padding="3" Width="Auto" Height="Auto"  Header="View" ItemsSource ="{Binding MenuItems}">
-                <MenuItem.Resources>
-                    <DataTemplate DataType="{x:Type xcad:LayoutAnchorable}">
-                        <Border  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                            <TextBlock Name="MenuItemText"  Text="{Binding Title}" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-                            </TextBlock>
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger  EventName="MouseLeftButtonUp">
-                                    <command:EventToCommand  Command="{Binding Path=DataContext.OnMenuItemPressed, Source={x:Reference Name=Main}}" CommandParameter="{Binding ElementName=MenuItemText, Path=DataContext}" PassEventArgsToCommand="True"  />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </Border>
-                    </DataTemplate>
-                </MenuItem.Resources>
+            <MenuItem Name="view" Margin="3" Padding="3" Width="Auto" Height="Auto"  Header="View" ItemsSource ="{Binding MenuItems}"  ItemTemplate="{StaticResource MenuItemDataTemplate}" >         
             </MenuItem>
             <MenuItem Name="help" Margin="3" Padding="3"  Width="Auto" Height="Auto"  Header="Help">
             </MenuItem>
+            
         </Menu>
 
         <Grid Grid.Row="1">

@@ -14,20 +14,24 @@ namespace WpfFileManager
     [Export(typeof(ICurrentDirectory))]
     [Export(typeof(MainWindowViewModel))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class MainWindowViewModel : ViewModelBase, IViewController, ICurrentDirectory
+    public class MainWindowViewModel : ViewModelBase, IViewController, ICurrentDirectory, IDisposable
     {
         private readonly IShortcutManager mShortcutManager;
+        private readonly IErrorManager mErrorManager;
         private Version AppVersion { get { return new Version(1, 0); } }
         private Dictionary<Guid, LayoutAnchorable> mToolsWindows = new Dictionary<Guid, LayoutAnchorable>();
-        private Dictionary<LayoutAnchorable, Guid> mWindowsTools = new Dictionary<LayoutAnchorable, Guid>();
-        private Dictionary<Guid, Guid> mPluginsView = new Dictionary<Guid, Guid>();
+        private Dictionary<Guid, List<Guid>> mPluginsView = new Dictionary<Guid, List<Guid>>();
 
         [ImportingConstructor]
-        public MainWindowViewModel(IShortcutManager shortcutManager)
+        public MainWindowViewModel(IShortcutManager shortcutManager, IErrorManager errorManager)
         {
             if (shortcutManager == null)
                 throw new ArgumentNullException("shortcutManager");
             mShortcutManager = shortcutManager;
+
+            if (errorManager == null)
+                throw new ArgumentNullException("errorManager");
+            mErrorManager = errorManager;
         }
 
         private UserControl mLeftPanel;
@@ -68,8 +72,6 @@ namespace WpfFileManager
                 {
                     var pluginGuid = Guid.NewGuid();
                     plugin.Apply(pluginGuid);
-
-                    mPluginsView.Add(pluginGuid, plugin.PluginViewGuid);
                 }
             }
         }
@@ -130,7 +132,7 @@ namespace WpfFileManager
             RightPanel = content;
         }
 
-        public Guid AddToolPanel(UserControl content, string title)
+        public Guid AddToolPanel(Guid pluginGuid, UserControl content, string title)
         {
             if (content == null)
             {
@@ -148,20 +150,33 @@ namespace WpfFileManager
                 MenuItems.Add(layoutAnchorable);
                 mToolsWindows.Add(guid, layoutAnchorable);
 
-                mWindowsTools.Add(layoutAnchorable, guid);
+                if (mPluginsView.ContainsKey(pluginGuid))
+                {
+                    mPluginsView[pluginGuid].Add(guid);
+                }
+                else
+                {
+                    mPluginsView.Add(pluginGuid, new List<Guid>() { guid });
+                }
+
                 return guid;
             }
             return default(Guid);
         }
 
-        public void CloseToolPanel(Guid guid)
+        public void CloseToolPanel(Guid pluginGuid, Guid guid)
         {
-            if (mToolsWindows.ContainsKey(guid))
+            if (mToolsWindows.ContainsKey(guid) &&
+                mPluginsView[pluginGuid].Contains(guid))
             {
                 var anchorable = mToolsWindows[guid];
                 mToolsWindows.Remove(guid);
+                mPluginsView[pluginGuid].Remove(guid);
                 if (Tools != null)
+                {
                     Tools.Remove(anchorable);
+                    MenuItems.Remove(anchorable);
+                }
             }
         }
 
@@ -272,11 +287,22 @@ namespace WpfFileManager
         private void OpenView(object o)
         {
             var layoutAnchorable = o as LayoutAnchorable;
-            if (layoutAnchorable != null)
+            if (layoutAnchorable != null &&
+                (mToolsWindows.ContainsValue(layoutAnchorable) &&
+                !Tools.Contains(layoutAnchorable)))
             {
-                if (mWindowsTools.ContainsKey(layoutAnchorable) && !Tools.Contains(layoutAnchorable))
+                Tools.Add(layoutAnchorable);
+            }
+        }
+
+        public void Dispose()
+        {
+            var plugins = ServiceLocator.Current.GetAllInstances<IPlugin>();
+            foreach (var plugin in plugins)
+            {
+                if (plugin.AppVersion == AppVersion)
                 {
-                    Tools.Add(layoutAnchorable);
+                    plugin.Dispose();
                 }
             }
         }

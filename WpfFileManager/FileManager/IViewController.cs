@@ -7,7 +7,7 @@ namespace FileManager
     {
         void SetLeftPanelContent(UserControl content);
         void SetRightPanelContent(UserControl content);
-        Guid AddToolPanel(UserControl content, string title);
-        void CloseToolPanel(Guid guid);
+        Guid AddToolPanel(Guid pluginGuid, UserControl content, string title);
+        void CloseToolPanel(Guid pluginGuid, Guid guid);
     }
 }

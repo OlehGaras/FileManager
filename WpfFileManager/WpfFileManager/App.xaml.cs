@@ -16,9 +16,11 @@ namespace WpfFileManager
             var pluginPath = string.Format(@"{0}\{1}", Environment.CurrentDirectory, "Plugins");
             var assembly1 = Assembly.LoadFrom(pluginPath + @"\testPlugin.dll");
             var assembly2 = Assembly.LoadFrom(pluginPath + @"\ShotCutsPlugin.dll");
+            var assembly3 = Assembly.LoadFrom(pluginPath + @"\ErrorPlugin.dll");
             ServiceLocator.Current.RegisterAssemblyTypes(typeof(App).Assembly);
             ServiceLocator.Current.RegisterAssemblyTypes(assembly1);
             ServiceLocator.Current.RegisterAssemblyTypes(assembly2);
+            ServiceLocator.Current.RegisterAssemblyTypes(assembly3);
             var mainWindowViewModel = ServiceLocator.Current.GetInstance<MainWindowViewModel>();
             ServiceLocator.Current.Register(new MainWindow(mainWindowViewModel));
 
@@ -27,6 +29,13 @@ namespace WpfFileManager
             mainWindow.Show();
             mainWindowViewModel.ApplyPlugins();
             //mainWindowViewModel.RegisterAvailableFunctions();
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            var mainWindowViewModel = ServiceLocator.Current.GetInstance<MainWindowViewModel>();
+            mainWindowViewModel.Dispose();
         }
     }
 }

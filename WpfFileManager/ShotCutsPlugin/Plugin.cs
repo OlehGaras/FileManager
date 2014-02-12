@@ -44,14 +44,13 @@ namespace ShotCutsPlugin
         public void Apply(Guid pluginGuid)
         {
             PluginGuid = pluginGuid;
-
             var shortcutPanel = new ShortcutView(new ShortcutViewModel(mAvailableFunctions));
-            PluginViewGuid = mViewController.AddToolPanel(shortcutPanel, "Shortcuts");
+            PluginViewGuid = mViewController.AddToolPanel(pluginGuid, shortcutPanel, "Shortcuts");
         }
 
         public void Dispose()
         {
-            mViewController.CloseToolPanel(PluginViewGuid);
+            mViewController.CloseToolPanel(PluginGuid, PluginViewGuid);
         }
     }
 }

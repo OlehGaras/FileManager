@@ -92,7 +92,7 @@
 
     </UserControl.Resources>
     <Grid>
-        <ListView ItemsSource="{Binding FileSystemInfo}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}">
+        <ListView ItemsSource="{Binding FileSystemInfo}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}" >
             <ListView.Style>
                 <Style TargetType="{x:Type ListView}">
                     <Setter Property="ItemTemplateSelector" Value="{StaticResource Style1}"/>
@@ -108,6 +108,9 @@
                 </Style>
             </ListView.Style>
             <i:Interaction.Triggers>
+                <i:EventTrigger  EventName="MouseDoubleClick" >
+                    <command:EventToCommand Command="{Binding OnListItemKeyPressed}" PassEventArgsToCommand="True"  />
+                </i:EventTrigger>
                 <i:EventTrigger  EventName="KeyUp" >
                     <command:EventToCommand Command="{Binding OnListItemKeyPressed}" PassEventArgsToCommand="True"  />
                 </i:EventTrigger>

@@ -10,9 +10,10 @@ namespace testPlugin
         private readonly IViewController mViewController;
         private readonly ICurrentDirectory mCurrentDirectory;
         private readonly IShortcutManager mShortcutManager;
+        private readonly IErrorManager mErrorManager;
 
         [ImportingConstructor]
-        public Plugin(IViewController viewController, ICurrentDirectory currentDirectory, IShortcutManager shortcutManager)
+        public Plugin(IViewController viewController, ICurrentDirectory currentDirectory, IShortcutManager shortcutManager,IErrorManager errorManager)
         {
             if (viewController == null)
                 throw new ArgumentNullException("viewController");
@@ -20,14 +21,16 @@ namespace testPlugin
                 throw new ArgumentNullException("currentDirectory");
             if (shortcutManager == null)
                 throw new ArgumentNullException("shortcutManager");
+            if(errorManager == null)
+                throw new ArgumentNullException("errorManager");
             mViewController = viewController;
             mCurrentDirectory = currentDirectory;
             mShortcutManager = shortcutManager;
-
+            mErrorManager = errorManager;
         }
 
         public Guid PluginGuid { get; private set; }
-        public Guid PluginViewGuid { get; private set; }
+        private Guid PluginViewGuid { get; set; }
 
         public Version PluginVersion { get { return new Version(1, 0); } }
         public Version AppVersion { get { return new Version(1, 0); } }
@@ -35,9 +38,9 @@ namespace testPlugin
         {
             PluginGuid = pluginGuid;
 
-            var leftDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory, mViewController, Panel.Left);
+            var leftDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory ,mErrorManager, Panel.Left);
             var leftPanel = new DirectoryView(leftDirectoryViewModel);
-            var rightDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory, mViewController, Panel.Right);
+            var rightDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory,mErrorManager, Panel.Right);
             var rightPanel = new DirectoryView(rightDirectoryViewModel);
             mViewController.SetLeftPanelContent(leftPanel);
             mViewController.SetRightPanelContent(rightPanel);
@@ -53,7 +56,7 @@ namespace testPlugin
 
         public void Dispose()
         {
-            mViewController.CloseToolPanel(PluginViewGuid);
+            mViewController.CloseToolPanel(PluginGuid, PluginViewGuid);
         }
     }
 }
