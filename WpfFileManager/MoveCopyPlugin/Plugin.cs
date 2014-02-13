@@ -57,7 +57,8 @@ namespace MoveCopyPlugin
 
             mShortcutManager.AddAction(new ShortcutAction("Copy", moveCopyViewModel.Copy));
             mShortcutManager.AddAction(new ShortcutAction("Paste", () => { }));
-            mShortcutManager.AddAction(new ShortcutAction("Move", () => { }));
+            mShortcutManager.AddAction(new ShortcutAction("Move", moveCopyViewModel.Move));
+            mShortcutManager.AddAction(new ShortcutAction("Delete", moveCopyViewModel.Delete));
         }
 
         public void Dispose()

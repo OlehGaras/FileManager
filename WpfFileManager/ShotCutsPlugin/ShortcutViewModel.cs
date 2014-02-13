@@ -51,7 +51,7 @@ namespace ShotCutsPlugin
                     mShortcutManager.MapAction(shortcut.ShortcutText, callback);
                 }
             }
-            OnPropertyChanged("Callbacks");
+            OnPropertyChanged("");
         }
 
         private void Serialize()

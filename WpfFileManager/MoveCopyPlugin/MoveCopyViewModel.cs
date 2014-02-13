@@ -62,7 +62,7 @@ namespace MoveCopyPlugin
             if (!dir.Exists)
             {
                 mErrorManager.AddError(new Error(
-                    new DirectoryNotFoundException("Source directory does not exist or could not be found: "+ sourceDirName)));
+                    new DirectoryNotFoundException("Source directory does not exist or could not be found: " + sourceDirName)));
                 return;
             }
 
@@ -95,6 +95,64 @@ namespace MoveCopyPlugin
                     string temppath = Path.Combine(destDirName, subdir.Name);
                     DirectoryCopy(subdir.FullName, temppath, copySubDirs);
                 }
+            }
+        }
+
+        public void Move()
+        {
+            IFileSystemInfo fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
+                                                 ? mCurrentFileSystemState.LeftSelectedItem
+                                                 : mCurrentFileSystemState.RightSelectedItem;
+            DirectoryInfo targetDir = mCurrentFileSystemState.CurrentPanel == Panel.Left
+                                          ? mCurrentFileSystemState.RightCurrentDirectory
+                                          : mCurrentFileSystemState.LeftCurrentDirectory;
+            MoveImpl(fileSystemInfo, targetDir);
+        }
+
+        private void MoveImpl(IFileSystemInfo fileSystemInfo, DirectoryInfo targetDir)
+        {
+            try
+            {
+                var destDirName = Path.Combine(targetDir.Path, fileSystemInfo.DisplayName);
+                if (fileSystemInfo is FileInfo)
+                {
+                    File.Move(fileSystemInfo.Path, destDirName);
+                }
+                if (fileSystemInfo is DirectoryInfo)
+                {
+                    Directory.Move(fileSystemInfo.Path, destDirName);
+                }
+            }
+            catch (Exception exception)
+            {
+                mErrorManager.AddError(new Error(exception));
+            }
+        }
+
+        public void Delete()
+        {
+            IFileSystemInfo fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
+                                                 ? mCurrentFileSystemState.LeftSelectedItem
+                                                 : mCurrentFileSystemState.RightSelectedItem;
+            DeleteImpl(fileSystemInfo);
+        }
+
+        private void DeleteImpl(IFileSystemInfo fileSystemInfo)
+        {
+            try
+            {
+                if (fileSystemInfo is FileInfo)
+                {
+                    File.Delete(fileSystemInfo.Path);
+                }
+                if (fileSystemInfo is DirectoryInfo)
+                {
+                    Directory.Delete(fileSystemInfo.Path, true);
+                }
+            }
+            catch (Exception exception)
+            {
+                mErrorManager.AddError(new Error(exception));
             }
         }
     }
