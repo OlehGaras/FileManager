@@ -55,10 +55,13 @@ namespace WpfFileManager
         }
 
         public event EventHandler ActionsChanged;
+
         protected virtual void OnActionsChanged()
         {
             var handler = ActionsChanged;
             if (handler != null) handler(this, EventArgs.Empty);
         }
     }
+
+    
 }

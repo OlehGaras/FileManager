@@ -5,21 +5,17 @@ using System.IO;
 using System.Linq;
 using System.Windows.Input;
 using FileManager;
+using DirectoryInfo = FileManager.DirectoryInfo;
+using FileInfo = FileManager.FileInfo;
 
 namespace testPlugin
 {
-    public enum Panel
-    {
-        Left,
-        Right
-    }
-
     public class DirectoryViewModel : ViewModelBase
     {
-        private readonly ICurrentDirectory mCurrentDirectory;
+        private readonly ICurrentFileSystemState mCurrentFileSystemState;
         private readonly IErrorManager mErrorManager;
         private readonly Panel mPanel;
-        private string mCurrentPanelDirectory;
+        private DirectoryInfo mCurrentPanelDirectory;
 
         private DelegateCommand mOnListItemKeyPressed;
 
@@ -57,63 +53,66 @@ namespace testPlugin
 
         private void ChangeDirectory()
         {
-            var path = SelectedItem.Path;
+            var path = SelectedItem as DirectoryInfo;
+            if (path == null)
+                return;
+
             if (SelectedItem.GetType() == typeof(DoublePointInfo))
             {
                 var directoryInfo = Directory.GetParent(SelectedItem.Path);
                 if (directoryInfo != null)
-                    path = directoryInfo.FullName;
+                    path = new DirectoryInfo(directoryInfo.FullName);
                 else
                     path = mCurrentPanelDirectory;
             }
 
             if (mPanel == Panel.Left)
             {
-                mCurrentDirectory.SetLeftCurrentDirectory(path);
+                mCurrentFileSystemState.SetLeftCurrentDirectory(path);
             }
             else
             {
-                mCurrentDirectory.SetRightCurrentDirectory(path);
+                mCurrentFileSystemState.SetRightCurrentDirectory(path);
             }
         }
 
-        public DirectoryViewModel(ICurrentDirectory currentDirectory, IErrorManager errorManager, Panel panel)
+        public DirectoryViewModel(ICurrentFileSystemState currentFileSystemState, IErrorManager errorManager, Panel panel)
         {
-            if (currentDirectory == null)
-                throw new ArgumentNullException("currentDirectory");
-            mCurrentDirectory = currentDirectory;
-            mCurrentDirectory.CurrentDirectoryChanged += CurrentDirectoryOnCurrentDirectoryChanged;
+            if (currentFileSystemState == null)
+                throw new ArgumentNullException("currentFileSystemState");
+            mCurrentFileSystemState = currentFileSystemState;
+            mCurrentFileSystemState.CurrentDirectoryChanged += CurrentFileSystemStateOnCurrentFileSystemStateChanged;
 
             if (errorManager == null)
                 throw new ArgumentNullException("errorManager");
             mErrorManager = errorManager;
 
             mPanel = panel;
-            mCurrentPanelDirectory = mPanel == Panel.Left ? mCurrentDirectory.LeftCurrentDirectory : mCurrentDirectory.RightCurrentDirectory;
+            mCurrentPanelDirectory = mPanel == Panel.Left ? mCurrentFileSystemState.LeftCurrentDirectory : mCurrentFileSystemState.RightCurrentDirectory;
             LoadDirectory(mCurrentPanelDirectory);
         }
 
-        private void CurrentDirectoryOnCurrentDirectoryChanged(object sender, EventArgs eventArgs)
+        private void CurrentFileSystemStateOnCurrentFileSystemStateChanged(object sender, EventArgs eventArgs)
         {
-            if (mPanel == Panel.Left && string.Compare(mCurrentPanelDirectory, mCurrentDirectory.LeftCurrentDirectory, StringComparison.OrdinalIgnoreCase) != 0)
+            if (mPanel == Panel.Left && mCurrentPanelDirectory != mCurrentFileSystemState.LeftCurrentDirectory)
             {
-                //mCurrentPanelDirectory = mCurrentDirectory.LeftCurrentDirectory;
-                LoadDirectory(mCurrentDirectory.LeftCurrentDirectory);
+                //mCurrentPanelDirectory = mCurrentFileSystemState.LeftCurrentDirectory;
+                LoadDirectory(mCurrentFileSystemState.LeftCurrentDirectory);
             }
 
-            if (mPanel == Panel.Right && string.Compare(mCurrentPanelDirectory, mCurrentDirectory.RightCurrentDirectory, StringComparison.OrdinalIgnoreCase) != 0)
+            if (mPanel == Panel.Right && mCurrentPanelDirectory != mCurrentFileSystemState.RightCurrentDirectory)
             {
-                //mCurrentPanelDirectory = mCurrentDirectory.RightCurrentDirectory;
-                LoadDirectory(mCurrentDirectory.RightCurrentDirectory);
+                //mCurrentPanelDirectory = mCurrentFileSystemState.RightCurrentDirectory;
+                LoadDirectory(mCurrentFileSystemState.RightCurrentDirectory);
             }
         }
 
-        private void LoadDirectory(string currentDirectory)
+        private void LoadDirectory(DirectoryInfo currentDirectory)
         {
             try
             {
-                var directories = Directory.EnumerateDirectories(currentDirectory);
-                var files = Directory.EnumerateFiles(currentDirectory);
+                var directories = Directory.EnumerateDirectories(currentDirectory.Path);
+                var files = Directory.EnumerateFiles(currentDirectory.Path);
 
                 var fileSystemInfos =
                     directories.Select(d => new DirectoryInfo(d))
@@ -121,7 +120,7 @@ namespace testPlugin
                                .Concat(files.Select(f => new FileInfo(f)))
                                .ToList();
                 SetTheIcon(fileSystemInfos);
-                fileSystemInfos.Insert(0, new DoublePointInfo(currentDirectory));
+                fileSystemInfos.Insert(0, new DoublePointInfo(currentDirectory.Path));
                 FileSystemInfo = new ObservableCollection<IFileSystemInfo>(fileSystemInfos);
                 mCurrentPanelDirectory = currentDirectory;
             }
@@ -169,6 +168,15 @@ namespace testPlugin
                 if (mSelectedItem != value)
                 {
                     mSelectedItem = value;
+                    if (mPanel == Panel.Left)
+                    {
+                        mCurrentFileSystemState.SetLeftSelectedItem(value);
+                    }
+                    else
+                    {
+                        mCurrentFileSystemState.SetRightSelectedItem(value);
+                    }
+
                     OnPropertyChanged("SelectedItem");
                 }
             }

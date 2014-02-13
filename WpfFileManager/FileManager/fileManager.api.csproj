@@ -46,12 +46,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DelegateCommand.cs" />
+    <Compile Include="DirectoryInfo.cs" />
     <Compile Include="Error.cs" />
+    <Compile Include="FileInfo.cs" />
     <Compile Include="IErrorManager.cs" />
+    <Compile Include="IFileSystemInfo.cs" />
     <Compile Include="IShortcutManager.cs" />
-    <Compile Include="ICurrentDirectory.cs" />
+    <Compile Include="ICurrentFileSystemState.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="IViewController.cs" />
+    <Compile Include="Panel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceLocator.cs" />
     <Compile Include="ShortcutAction.cs" />

@@ -7,20 +7,21 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using FileManager;
 using Xceed.Wpf.AvalonDock.Layout;
+using Panel = FileManager.Panel;
 
 namespace WpfFileManager
 {
     [Export(typeof(IViewController))]
-    [Export(typeof(ICurrentDirectory))]
+    [Export(typeof(ICurrentFileSystemState))]
     [Export(typeof(MainWindowViewModel))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class MainWindowViewModel : ViewModelBase, IViewController, ICurrentDirectory, IDisposable
+    public class MainWindowViewModel : ViewModelBase, IViewController, ICurrentFileSystemState, IDisposable
     {
         private readonly IShortcutManager mShortcutManager;
         private readonly IErrorManager mErrorManager;
         private Version AppVersion { get { return new Version(1, 0); } }
-        private Dictionary<Guid, LayoutAnchorable> mToolsWindows = new Dictionary<Guid, LayoutAnchorable>();
-        private Dictionary<Guid, List<Guid>> mPluginsView = new Dictionary<Guid, List<Guid>>();
+        private readonly Dictionary<Guid, LayoutAnchorable> mToolsWindows = new Dictionary<Guid, LayoutAnchorable>();
+        private readonly Dictionary<Guid, List<Guid>> mPluginsView = new Dictionary<Guid, List<Guid>>();
 
         [ImportingConstructor]
         public MainWindowViewModel(IShortcutManager shortcutManager, IErrorManager errorManager)
@@ -156,7 +157,7 @@ namespace WpfFileManager
                 }
                 else
                 {
-                    mPluginsView.Add(pluginGuid, new List<Guid>() { guid });
+                    mPluginsView.Add(pluginGuid, new List<Guid> { guid });
                 }
 
                 return guid;
@@ -180,8 +181,8 @@ namespace WpfFileManager
             }
         }
 
-        private string mLeftCurrentDirectory = @"D:\";
-        public string LeftCurrentDirectory
+        private DirectoryInfo mLeftCurrentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
+        public DirectoryInfo LeftCurrentDirectory
         {
             get { return mLeftCurrentDirectory; }
             set
@@ -191,8 +192,8 @@ namespace WpfFileManager
             }
         }
 
-        private string mRightCurrentDirectory = @"D:\";
-        public string RightCurrentDirectory
+        private DirectoryInfo mRightCurrentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
+        public DirectoryInfo RightCurrentDirectory
         {
             get { return mRightCurrentDirectory; }
             set
@@ -201,14 +202,52 @@ namespace WpfFileManager
                 OnCurrentDirectoryChanged();
             }
         }
-        public void SetLeftCurrentDirectory(string dir)
+
+        private IFileSystemInfo mRightSelectedItem;
+        public IFileSystemInfo RightSelectedItem
+        {
+            get { return mRightSelectedItem = mRightSelectedItem?? RightCurrentDirectory; }
+            set
+            {
+                mRightSelectedItem = value;
+            }
+        }
+
+        public Panel CurrentPanel { get; private set; }
+
+        private IFileSystemInfo mLefttSelectedItem;
+        public IFileSystemInfo LeftSelectedItem
+        {
+            get { return mLefttSelectedItem = mLefttSelectedItem ?? LeftCurrentDirectory; }
+            set
+            {
+                mLefttSelectedItem = value;
+            }
+        }
+
+        public void SetCurrentPanel(Panel panel)
+        {
+            CurrentPanel = panel;
+        }
+
+        public void SetLeftCurrentDirectory(DirectoryInfo dir)
         {
             LeftCurrentDirectory = dir;
         }
 
-        public void SetRightCurrentDirectory(string dir)
+        public void SetRightCurrentDirectory(DirectoryInfo dir)
         {
             RightCurrentDirectory = dir;
+        }
+
+        public void SetLeftSelectedItem(IFileSystemInfo fileSystemInfo)
+        {
+            LeftSelectedItem = fileSystemInfo;
+        }
+
+        public void SetRightSelectedItem(IFileSystemInfo fileSystemInfo)
+        {
+            RightSelectedItem = fileSystemInfo;
         }
 
         public event EventHandler CurrentDirectoryChanged;

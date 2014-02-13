@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Media;
 
-namespace testPlugin
+namespace FileManager
 {
-    public class FileInfo: IFileSystemInfo
+    public class FileInfo : IFileSystemInfo
     {
         public FileInfo(string path)
         {
@@ -19,7 +18,7 @@ namespace testPlugin
         }
         public string Path { get; private set; }
         public string DisplayName { get; private set; }
-        public ImageSource Icon { get;  set; }
+        public ImageSource Icon { get; set; }
         public string Extention { get; private set; }
         public DateTime LastWritetime { get; private set; }
         public DateTime LastAccessTime { get; private set; }

@@ -38,7 +38,7 @@ namespace ShotCutsPlugin
             if (mDeserializedShortcuts == null)
                 return;
 
-            Shortcuts = new ObservableCollection<Shortcut>();
+            Shortcuts.Clear();
             foreach (var shortcut in mDeserializedShortcuts)
             {
                 var callback =
@@ -51,6 +51,7 @@ namespace ShotCutsPlugin
                     mShortcutManager.MapAction(shortcut.ShortcutText, callback);
                 }
             }
+            OnPropertyChanged("Callbacks");
         }
 
         private void Serialize()

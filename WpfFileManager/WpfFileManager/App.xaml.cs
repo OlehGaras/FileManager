@@ -17,10 +17,14 @@ namespace WpfFileManager
             var assembly1 = Assembly.LoadFrom(pluginPath + @"\testPlugin.dll");
             var assembly2 = Assembly.LoadFrom(pluginPath + @"\ShotCutsPlugin.dll");
             var assembly3 = Assembly.LoadFrom(pluginPath + @"\ErrorPlugin.dll");
+            var assembly4 = Assembly.LoadFile(pluginPath + @"\MoveCopyPlugin.dll");
+
             ServiceLocator.Current.RegisterAssemblyTypes(typeof(App).Assembly);
             ServiceLocator.Current.RegisterAssemblyTypes(assembly1);
             ServiceLocator.Current.RegisterAssemblyTypes(assembly2);
             ServiceLocator.Current.RegisterAssemblyTypes(assembly3);
+            ServiceLocator.Current.RegisterAssemblyTypes(assembly4);
+
             var mainWindowViewModel = ServiceLocator.Current.GetInstance<MainWindowViewModel>();
             ServiceLocator.Current.Register(new MainWindow(mainWindowViewModel));
 
@@ -28,7 +32,6 @@ namespace WpfFileManager
             MainWindow = mainWindow;
             mainWindow.Show();
             mainWindowViewModel.ApplyPlugins();
-            //mainWindowViewModel.RegisterAvailableFunctions();
         }
 
         protected override void OnExit(ExitEventArgs e)

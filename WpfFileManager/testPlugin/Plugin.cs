@@ -8,23 +8,23 @@ namespace testPlugin
     public class Plugin : IPlugin
     {
         private readonly IViewController mViewController;
-        private readonly ICurrentDirectory mCurrentDirectory;
+        private readonly ICurrentFileSystemState mCurrentFileSystemState;
         private readonly IShortcutManager mShortcutManager;
         private readonly IErrorManager mErrorManager;
 
         [ImportingConstructor]
-        public Plugin(IViewController viewController, ICurrentDirectory currentDirectory, IShortcutManager shortcutManager,IErrorManager errorManager)
+        public Plugin(IViewController viewController, ICurrentFileSystemState currentFileSystemState, IShortcutManager shortcutManager,IErrorManager errorManager)
         {
             if (viewController == null)
                 throw new ArgumentNullException("viewController");
-            if (currentDirectory == null)
-                throw new ArgumentNullException("currentDirectory");
+            if (currentFileSystemState == null)
+                throw new ArgumentNullException("currentFileSystemState");
             if (shortcutManager == null)
                 throw new ArgumentNullException("shortcutManager");
             if(errorManager == null)
                 throw new ArgumentNullException("errorManager");
             mViewController = viewController;
-            mCurrentDirectory = currentDirectory;
+            mCurrentFileSystemState = currentFileSystemState;
             mShortcutManager = shortcutManager;
             mErrorManager = errorManager;
         }
@@ -38,12 +38,14 @@ namespace testPlugin
         {
             PluginGuid = pluginGuid;
 
-            var leftDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory ,mErrorManager, Panel.Left);
+            var leftDirectoryViewModel = new DirectoryViewModel(mCurrentFileSystemState ,mErrorManager, Panel.Left);
             var leftPanel = new DirectoryView(leftDirectoryViewModel);
-            var rightDirectoryViewModel = new DirectoryViewModel(mCurrentDirectory,mErrorManager, Panel.Right);
+            var rightDirectoryViewModel = new DirectoryViewModel(mCurrentFileSystemState,mErrorManager, Panel.Right);
             var rightPanel = new DirectoryView(rightDirectoryViewModel);
+
             mViewController.SetLeftPanelContent(leftPanel);
             mViewController.SetRightPanelContent(rightPanel);
+
             mShortcutManager.AddAction(new ShortcutAction("HelloWorld Action", () => Console.WriteLine("HelloWorld")));
             mShortcutManager.AddAction(new ShortcutAction("ByeWorld Action", () => Console.WriteLine("ByeWorld")));
             mShortcutManager.AddAction(new ShortcutAction("Change Style", () =>

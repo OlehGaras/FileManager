@@ -42,10 +42,10 @@
             
         </Menu>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" KeyboardNavigation.TabNavigation="Cycle">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" MinWidth="20"/>
-                <ColumnDefinition Width="*" MinWidth="20"/>
+                <ColumnDefinition Name="first" Width="*" MinWidth="20" />
+                <ColumnDefinition Name="second" Width="*" MinWidth="20" />
             </Grid.ColumnDefinitions>
             <ContentControl Name = "leftPanel" Grid.Column="0" Content="{Binding LeftPanel}"/>
             <ContentControl Name = "rightPanel" Grid.Column="1" Content="{Binding RightPanel}"/>

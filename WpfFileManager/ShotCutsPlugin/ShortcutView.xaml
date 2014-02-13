@@ -31,7 +31,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </TextBox>
-            <ComboBox Grid.Column="1" Margin="3" ItemsSource="{Binding Callbacks, UpdateSourceTrigger=LostFocus}" HorizontalAlignment="Stretch" SelectedItem ="{Binding ComboSelectedItem}">
+            <ComboBox Grid.Column="1" Margin="3" ItemsSource="{Binding Callbacks, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" SelectedItem ="{Binding ComboSelectedItem}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type fileManager:ShortcutAction}">
                         <TextBlock Text="{Binding Name}"/>

@@ -6,10 +6,11 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:l="clr-namespace:testPlugin"
              xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF45"
+             xmlns:fileManager="clr-namespace:FileManager;assembly=FileManager"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <DataTemplate x:Key="DirectoryInfoDataTemplate"  DataType="{x:Type testPlugin:DirectoryInfo}">
+        <DataTemplate x:Key="DirectoryInfoDataTemplate"  DataType="{x:Type fileManager:DirectoryInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="16" Height="16"/>
                 <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
@@ -18,14 +19,14 @@
         <DataTemplate x:Key="DoublePointInfoDataTemplate" DataType="{x:Type testPlugin:DoublePointInfo}">
             <TextBlock Text=".."/>
         </DataTemplate>
-        <DataTemplate x:Key="FileInfoDataTemplate" DataType="{x:Type testPlugin:FileInfo}">
+        <DataTemplate x:Key="FileInfoDataTemplate" DataType="{x:Type fileManager:FileInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="16" Height="16"/>
                 <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="DirectoryInfoDataTemplate2"  DataType="{x:Type testPlugin:DirectoryInfo}">
+        <DataTemplate x:Key="DirectoryInfoDataTemplate2"  DataType="{x:Type fileManager:DirectoryInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="32" Height="32"/>
                 <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
@@ -34,14 +35,14 @@
         <DataTemplate x:Key="DoublePointInfoDataTemplate2" DataType="{x:Type testPlugin:DoublePointInfo}">
             <TextBlock Text=".."/>
         </DataTemplate>
-        <DataTemplate x:Key="FileInfoDataTemplate2" DataType="{x:Type testPlugin:FileInfo}">
+        <DataTemplate x:Key="FileInfoDataTemplate2" DataType="{x:Type fileManager:FileInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="32" Height="32"/>
                 <TextBlock Text="{Binding Path}" VerticalAlignment="Center"/>
             </StackPanel>
         </DataTemplate>
 
-        <DataTemplate x:Key="DirectoryInfoDataTemplate3"  DataType="{x:Type testPlugin:DirectoryInfo}">
+        <DataTemplate x:Key="DirectoryInfoDataTemplate3"  DataType="{x:Type fileManager:DirectoryInfo}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -60,7 +61,7 @@
         <DataTemplate x:Key="DoublePointInfoDataTemplate3" DataType="{x:Type testPlugin:DoublePointInfo}">
             <TextBlock Text=".."/>
         </DataTemplate>
-        <DataTemplate x:Key="FileInfoDataTemplate3" DataType="{x:Type testPlugin:FileInfo}">
+        <DataTemplate x:Key="FileInfoDataTemplate3" DataType="{x:Type fileManager:FileInfo}">
             <StackPanel Orientation="Horizontal">
                 <Image Source="{Binding Icon}" Width="32" Height="32"/>
                 <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>

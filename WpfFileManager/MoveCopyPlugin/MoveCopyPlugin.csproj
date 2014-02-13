@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9A4E23CB-65A8-4F6C-8210-2C8BD6625AA5}</ProjectGuid>
+    <ProjectGuid>{E4DABCF6-B301-4E77-86AB-03B006C21335}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>testPlugin</RootNamespace>
-    <AssemblyName>testPlugin</AssemblyName>
+    <RootNamespace>MoveCopyPlugin</RootNamespace>
+    <AssemblyName>MoveCopyPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,27 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GalaSoft.MvvmLight.Extras.WPF45">
-      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\net45\GalaSoft.MvvmLight.Extras.WPF45.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="GalaSoft.MvvmLight.WPF45">
-      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\net45\GalaSoft.MvvmLight.WPF45.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Interactivity">
-      <HintPath>..\packages\MvvmLightLibs.4.2.30.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -60,19 +44,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DelegateCommand.cs" />
-    <Compile Include="DoublePointInfo.cs" />
-    <Compile Include="DirectoryView.xaml.cs">
-      <DependentUpon>DirectoryView.xaml</DependentUpon>
+    <Compile Include="MoveCopyView.xaml.cs">
+      <DependentUpon>MoveCopyView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DirectoryViewModel.cs" />
-    <Compile Include="FileIconManager.cs" />
-    <Compile Include="FolderIconManager.cs" />
+    <Compile Include="MoveCopyViewModel.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyDataTemplateSelector.cs" />
-    <Compile Include="ShellManager.cs" />
-    <Compile Include="SystemAPI.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FileManager\fileManager.api.csproj">
@@ -81,13 +58,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="DirectoryView.xaml">
+    <Page Include="MoveCopyView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
