@@ -8,7 +8,7 @@ namespace ErrorPlugin
     public class Plugin:IPlugin
     {
         private readonly IViewController mViewController;
-        private IErrorManager mErrorManager;
+        private readonly IErrorManager mErrorManager;
 
         public Guid PluginGuid { get; private set; }
         public Guid PluginViewGuid { get; private set; }

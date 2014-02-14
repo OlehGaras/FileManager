@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
+using System.Windows;
+using System.Windows.Data;
 using FileManager;
 using DirectoryInfo = FileManager.DirectoryInfo;
 using FileInfo = FileManager.FileInfo;
@@ -10,6 +13,20 @@ namespace MoveCopyPlugin
     {
         private readonly ICurrentFileSystemState mCurrentFileSystemState;
         private readonly IErrorManager mErrorManager;
+
+        private Visibility mVisible = Visibility.Collapsed;
+        public Visibility Visible
+        {
+            get { return mVisible; }
+            set
+            {
+                if (mVisible != value)
+                {
+                    mVisible = value;
+                    OnPropertyChanged("Visible");
+                }
+            }
+        }
 
         public MoveCopyViewModel(ICurrentFileSystemState currentFileSystemState, IErrorManager errorManager)
         {
@@ -23,7 +40,8 @@ namespace MoveCopyPlugin
 
         public void Copy()
         {
-            IFileSystemInfo fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
+            Visible = Visibility.Visible;
+            var fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
                                                  ? mCurrentFileSystemState.LeftSelectedItem
                                                  : mCurrentFileSystemState.RightSelectedItem;
             DirectoryInfo targetDir = mCurrentFileSystemState.CurrentPanel == Panel.Left
@@ -31,7 +49,7 @@ namespace MoveCopyPlugin
                                           : mCurrentFileSystemState.LeftCurrentDirectory;
 
             CopyImpl(fileSystemInfo, targetDir);
-
+            Visible = Visibility.Collapsed;
         }
 
         private void CopyImpl(IFileSystemInfo fileSystemInfo, DirectoryInfo targetDir)
@@ -51,7 +69,7 @@ namespace MoveCopyPlugin
             catch (Exception exception)
             {
                 mErrorManager.AddError(new Error(exception));
-            }
+            }           
         }
 
         private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
@@ -100,6 +118,7 @@ namespace MoveCopyPlugin
 
         public void Move()
         {
+            Visible = Visibility.Visible;
             IFileSystemInfo fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
                                                  ? mCurrentFileSystemState.LeftSelectedItem
                                                  : mCurrentFileSystemState.RightSelectedItem;
@@ -107,6 +126,7 @@ namespace MoveCopyPlugin
                                           ? mCurrentFileSystemState.RightCurrentDirectory
                                           : mCurrentFileSystemState.LeftCurrentDirectory;
             MoveImpl(fileSystemInfo, targetDir);
+            Visible = Visibility.Collapsed;
         }
 
         private void MoveImpl(IFileSystemInfo fileSystemInfo, DirectoryInfo targetDir)
@@ -131,10 +151,12 @@ namespace MoveCopyPlugin
 
         public void Delete()
         {
+            Visible = Visibility.Visible;
             IFileSystemInfo fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
                                                  ? mCurrentFileSystemState.LeftSelectedItem
                                                  : mCurrentFileSystemState.RightSelectedItem;
             DeleteImpl(fileSystemInfo);
+            Visible = Visibility.Collapsed;
         }
 
         private void DeleteImpl(IFileSystemInfo fileSystemInfo)
@@ -154,6 +176,18 @@ namespace MoveCopyPlugin
             {
                 mErrorManager.AddError(new Error(exception));
             }
+        }
+    }
+    public class BooleanToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)value ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

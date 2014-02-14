@@ -181,7 +181,8 @@ namespace WpfFileManager
             }
         }
 
-        private DirectoryInfo mLeftCurrentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
+        //private DirectoryInfo mLeftCurrentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
+        private DirectoryInfo mLeftCurrentDirectory = new DirectoryInfo("D:\\");
         public DirectoryInfo LeftCurrentDirectory
         {
             get { return mLeftCurrentDirectory; }
@@ -192,7 +193,8 @@ namespace WpfFileManager
             }
         }
 
-        private DirectoryInfo mRightCurrentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
+        //private DirectoryInfo mRightCurrentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
+        private DirectoryInfo mRightCurrentDirectory = new DirectoryInfo("D:\\");
         public DirectoryInfo RightCurrentDirectory
         {
             get { return mRightCurrentDirectory; }
@@ -210,6 +212,7 @@ namespace WpfFileManager
             set
             {
                 mRightSelectedItem = value;
+                SetCurrentPanel(Panel.Right);
             }
         }
 
@@ -222,6 +225,7 @@ namespace WpfFileManager
             set
             {
                 mLefttSelectedItem = value;
+                SetCurrentPanel(Panel.Left);
             }
         }
 
@@ -307,6 +311,7 @@ namespace WpfFileManager
             if (actionByKey != null)
             {
                 actionByKey.Action();
+                OnCurrentDirectoryChanged();
             }
         }
 

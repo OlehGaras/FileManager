@@ -94,13 +94,15 @@ namespace testPlugin
 
         private void CurrentFileSystemStateOnCurrentFileSystemStateChanged(object sender, EventArgs eventArgs)
         {
-            if (mPanel == Panel.Left && mCurrentPanelDirectory != mCurrentFileSystemState.LeftCurrentDirectory)
+            //if (mPanel == Panel.Left && mCurrentPanelDirectory != mCurrentFileSystemState.LeftCurrentDirectory)
+            if (mPanel == Panel.Left)
             {
                 //mCurrentPanelDirectory = mCurrentFileSystemState.LeftCurrentDirectory;
                 LoadDirectory(mCurrentFileSystemState.LeftCurrentDirectory);
             }
 
-            if (mPanel == Panel.Right && mCurrentPanelDirectory != mCurrentFileSystemState.RightCurrentDirectory)
+            //if (mPanel == Panel.Right && mCurrentPanelDirectory != mCurrentFileSystemState.RightCurrentDirectory)
+            if (mPanel == Panel.Right)
             {
                 //mCurrentPanelDirectory = mCurrentFileSystemState.RightCurrentDirectory;
                 LoadDirectory(mCurrentFileSystemState.RightCurrentDirectory);

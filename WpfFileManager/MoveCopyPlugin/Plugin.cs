@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Windows;
 using FileManager;
 
 namespace MoveCopyPlugin
@@ -55,7 +56,12 @@ namespace MoveCopyPlugin
 
             mPluginViewGuid = mViewController.AddToolPanel(pluginGuid, moveCopyView, "Moving/Coping Process");
 
-            mShortcutManager.AddAction(new ShortcutAction("Copy", moveCopyViewModel.Copy));
+            mShortcutManager.AddAction(new ShortcutAction("Copy", () =>
+                {
+                    moveCopyViewModel.Visible = Visibility.Visible;
+                    moveCopyViewModel.Copy();
+                    moveCopyViewModel.Visible = Visibility.Collapsed;
+                }));
             mShortcutManager.AddAction(new ShortcutAction("Paste", () => { }));
             mShortcutManager.AddAction(new ShortcutAction("Move", moveCopyViewModel.Move));
             mShortcutManager.AddAction(new ShortcutAction("Delete", moveCopyViewModel.Delete));
