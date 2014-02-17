@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using FileManager;
@@ -13,6 +15,9 @@ namespace MoveCopyPlugin
     {
         private readonly ICurrentFileSystemState mCurrentFileSystemState;
         private readonly IErrorManager mErrorManager;
+
+        public  BackgroundWorker BackgroundWorker = new BackgroundWorker();
+        private CancellationTokenSource mCts;
 
         private Visibility mVisible = Visibility.Collapsed;
         public Visibility Visible
@@ -36,9 +41,15 @@ namespace MoveCopyPlugin
                 throw new ArgumentNullException("errorManager");
             mCurrentFileSystemState = currentFileSystemState;
             mErrorManager = errorManager;
+
+            //mCts = new CancellationTokenSource();
+            ////BackgroundWorker.DoWork += GetGroupsOfFiles;
+            //BackgroundWorker.RunWorkerCompleted += BackgroundWorkerRunWorkerCompleted;
+            //BackgroundWorker.WorkerSupportsCancellation = true;
+            //BackgroundWorker.WorkerReportsProgress = true;
         }
 
-        public void Copy()
+        public void Copy(object sender, DoWorkEventArgs doWorkEventArgs)
         {
             Visible = Visibility.Visible;
             var fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
@@ -47,7 +58,7 @@ namespace MoveCopyPlugin
             DirectoryInfo targetDir = mCurrentFileSystemState.CurrentPanel == Panel.Left
                                           ? mCurrentFileSystemState.RightCurrentDirectory
                                           : mCurrentFileSystemState.LeftCurrentDirectory;
-
+            
             CopyImpl(fileSystemInfo, targetDir);
             Visible = Visibility.Collapsed;
         }

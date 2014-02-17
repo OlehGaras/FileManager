@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace FileManager
 {
@@ -8,6 +10,8 @@ namespace FileManager
         DirectoryInfo RightCurrentDirectory { get; }
         IFileSystemInfo LeftSelectedItem { get; }
         IFileSystemInfo RightSelectedItem { get; }
+        IList LeftSelectedItems { get; }
+        IList RightSelectedItems { get; }
         Panel CurrentPanel { get; }
         void SetCurrentPanel(Panel panel);
         void SetLeftCurrentDirectory(DirectoryInfo dir);
@@ -15,5 +19,7 @@ namespace FileManager
         void SetLeftSelectedItem(IFileSystemInfo fileSystemInfo);
         void SetRightSelectedItem(IFileSystemInfo fileSystemInfo);
         event EventHandler CurrentDirectoryChanged;
+        void SetLeftSelectedItems(IList value);
+        void SetRightSelectedItems(IList value);
     }
 }

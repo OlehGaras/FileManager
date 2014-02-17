@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
@@ -208,7 +209,7 @@ namespace WpfFileManager
         private IFileSystemInfo mRightSelectedItem;
         public IFileSystemInfo RightSelectedItem
         {
-            get { return mRightSelectedItem = mRightSelectedItem?? RightCurrentDirectory; }
+            get { return mRightSelectedItem = mRightSelectedItem ?? RightCurrentDirectory; }
             set
             {
                 mRightSelectedItem = value;
@@ -253,6 +254,45 @@ namespace WpfFileManager
         {
             RightSelectedItem = fileSystemInfo;
         }
+
+        private IList mLeftSelectedItems = new ObservableCollection<IFileSystemInfo>();
+        public IList LeftSelectedItems
+        {
+            get { return mLeftSelectedItems; }
+            set
+            {
+                if (mLeftSelectedItems != value)
+                {
+                    mLeftSelectedItems = value;
+                }
+                SetCurrentPanel(Panel.Left);
+            }
+        }
+
+        private IList mRightSelectedItems = new ObservableCollection<IFileSystemInfo>();
+        public IList RightSelectedItems
+        {
+            get { return mRightSelectedItems; }
+            set
+            {
+                if (mRightSelectedItems != value)
+                {
+                    mRightSelectedItems = value;
+                }
+                SetCurrentPanel(Panel.Right);
+            }
+        }
+
+        public void SetLeftSelectedItems(IList value)
+        {
+            LeftSelectedItems = value;
+        }
+
+        public void SetRightSelectedItems(IList value)
+        {
+            RightSelectedItems = value;
+        }
+
 
         public event EventHandler CurrentDirectoryChanged;
         protected virtual void OnCurrentDirectoryChanged()

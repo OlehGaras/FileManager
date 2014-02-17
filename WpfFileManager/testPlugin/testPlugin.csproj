@@ -79,6 +79,10 @@
       <Project>{E34A8A24-060C-4EFD-A3DE-FCB224678EDD}</Project>
       <Name>fileManager.api</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WpfFileManager\fileManager.ui.csproj">
+      <Project>{F64E277E-DBAD-41AD-A88F-9B808F6691AC}</Project>
+      <Name>fileManager.ui</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Page Include="DirectoryView.xaml">

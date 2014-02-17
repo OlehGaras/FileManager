@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using System.Windows;
 using FileManager;
 
 namespace MoveCopyPlugin
@@ -58,9 +57,7 @@ namespace MoveCopyPlugin
 
             mShortcutManager.AddAction(new ShortcutAction("Copy", () =>
                 {
-                    moveCopyViewModel.Visible = Visibility.Visible;
-                    moveCopyViewModel.Copy();
-                    moveCopyViewModel.Visible = Visibility.Collapsed;
+                    moveCopyViewModel.BackgroundWorker.DoWork += moveCopyViewModel.Copy;             
                 }));
             mShortcutManager.AddAction(new ShortcutAction("Paste", () => { }));
             mShortcutManager.AddAction(new ShortcutAction("Move", moveCopyViewModel.Move));

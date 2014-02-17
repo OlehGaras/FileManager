@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -180,6 +181,29 @@ namespace testPlugin
                     }
 
                     OnPropertyChanged("SelectedItem");
+                }
+            }
+        }
+
+        private IList mSelectedItems;
+        public IList SelectedItems
+        {
+            get { return mSelectedItems; }
+            set
+            {
+                if (mSelectedItems != value)
+                {
+                    mSelectedItems = value;
+                    if (mPanel == Panel.Left)
+                    {
+                        mCurrentFileSystemState.SetLeftSelectedItems(value);
+                    }
+                    else
+                    {
+                        mCurrentFileSystemState.SetRightSelectedItems(value);
+                    }
+
+                    OnPropertyChanged("SelectedItems");
                 }
             }
         }

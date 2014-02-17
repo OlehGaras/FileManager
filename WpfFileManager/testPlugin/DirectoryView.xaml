@@ -7,6 +7,8 @@
              xmlns:l="clr-namespace:testPlugin"
              xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WPF45"
              xmlns:fileManager="clr-namespace:FileManager;assembly=FileManager"
+             xmlns:wpfFileManager="clr-namespace:WpfFileManager;assembly=WpfFileManager"
+
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
@@ -33,7 +35,7 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="DoublePointInfoDataTemplate2" DataType="{x:Type testPlugin:DoublePointInfo}">
-            <TextBlock Text=".."/>
+            <TextBlock Text=".." FontSize="20"/>
         </DataTemplate>
         <DataTemplate x:Key="FileInfoDataTemplate2" DataType="{x:Type fileManager:FileInfo}">
             <StackPanel Orientation="Horizontal">
@@ -93,7 +95,8 @@
 
     </UserControl.Resources>
     <Grid>
-        <ListView ItemsSource="{Binding FileSystemInfo}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}" >
+        <wpfFileManager:Proxy In="{Binding ElementName=list, Path=SelectedItems}" Out="{Binding SelectedItems}"/>
+        <ListView Name="list" ItemsSource="{Binding FileSystemInfo}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" SelectedItem="{Binding SelectedItem}">
             <ListView.Style>
                 <Style TargetType="{x:Type ListView}">
                     <Setter Property="ItemTemplateSelector" Value="{StaticResource Style1}"/>

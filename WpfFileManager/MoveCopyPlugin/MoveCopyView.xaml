@@ -9,7 +9,7 @@
     <UserControl.Resources>
         <moveCopyPlugin:BooleanToVisibilityConverter x:Key="Converter"/>
     </UserControl.Resources>
-    <Grid  x:Name="wpfProgressBarAndText" Grid.Row="2" Margin="30,50,30,30"  Visibility="{Binding Visible, UpdateSourceTrigger=PropertyChanged}"  VerticalAlignment="Top" HorizontalAlignment="Stretch" >
+    <Grid  x:Name="wpfProgressBarAndText" Grid.Row="2" Margin="30,50,30,30"  Visibility="{Binding Visible, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  VerticalAlignment="Top" HorizontalAlignment="Stretch" >
         <!--<Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
