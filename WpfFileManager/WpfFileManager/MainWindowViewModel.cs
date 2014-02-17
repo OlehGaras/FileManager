@@ -283,6 +283,11 @@ namespace WpfFileManager
             }
         }
 
+        public void RefreshCurrentDirectory()
+        {
+            OnCurrentDirectoryChanged();
+        }
+
         public void SetLeftSelectedItems(IList value)
         {
             LeftSelectedItems = value;

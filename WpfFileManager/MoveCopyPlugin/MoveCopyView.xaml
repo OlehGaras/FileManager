@@ -2,20 +2,22 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:moveCopyPlugin="clr-namespace:MoveCopyPlugin"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <moveCopyPlugin:BooleanToVisibilityConverter x:Key="Converter"/>
     </UserControl.Resources>
-    <Grid  x:Name="wpfProgressBarAndText" Grid.Row="2" Margin="30,50,30,30"  Visibility="{Binding Visible, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  VerticalAlignment="Top" HorizontalAlignment="Stretch" >
-        <!--<Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>-->
-        
-        <ProgressBar Grid.Row="1" x:Name="wpfProgressBar" IsIndeterminate="True"  Width="Auto" />
-        <TextBlock Grid.Row="0" Margin="5" Padding="3" HorizontalAlignment="Center" Text='Processing, Please Wait...' Width="Auto" Background="Transparent" Foreground="Blue"/>
+    <Grid  x:Name="wpfProgressBarAndText" Grid.Row="2" Visibility="{Binding Path=Visible,  UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Stretch" >
+        <ListView x:Name="listView" ItemsSource="{Binding Files}" HorizontalAlignment="Stretch">
+            <ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type moveCopyPlugin:CopyProgressViewModel}">
+                    <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Width="{Binding ElementName=listView, Path=ActualWidth}">
+                        <ProgressBar Grid.Row="1" x:Name="wpfProgressBar" Maximum="100" Value="{Binding Path=Progress, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Stretch" />
+                        <TextBlock Grid.Row="0" Margin="5" Padding="3" HorizontalAlignment="Center" Text="{Binding DisplayName}" Width="Auto" Background="Transparent" Foreground="Blue"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </UserControl>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Windows;
 using FileManager;
 
 namespace MoveCopyPlugin
@@ -16,13 +17,13 @@ namespace MoveCopyPlugin
         [ImportingConstructor]
         public Plugin(IShortcutManager shortcutManager, IErrorManager errorManager, IViewController viewController, ICurrentFileSystemState currentFileSystemState)
         {
-            if (shortcutManager == null) 
+            if (shortcutManager == null)
                 throw new ArgumentNullException("shortcutManager");
-            if (errorManager == null) 
+            if (errorManager == null)
                 throw new ArgumentNullException("errorManager");
-            if (viewController == null) 
+            if (viewController == null)
                 throw new ArgumentNullException("viewController");
-            if (currentFileSystemState == null) 
+            if (currentFileSystemState == null)
                 throw new ArgumentNullException("currentFileSystemState");
             mShortcutManager = shortcutManager;
             mErrorManager = errorManager;
@@ -31,7 +32,7 @@ namespace MoveCopyPlugin
         }
 
         public Guid PluginGuid { get; private set; }
-       
+
         public Version PluginVersion
         {
             get
@@ -57,16 +58,32 @@ namespace MoveCopyPlugin
 
             mShortcutManager.AddAction(new ShortcutAction("Copy", () =>
                 {
-                    moveCopyViewModel.BackgroundWorker.DoWork += moveCopyViewModel.Copy;             
+                    moveCopyViewModel.Visible = Visibility.Visible;
+                    moveCopyViewModel.InitializeWorker();
+                    moveCopyViewModel.BackgroundWorker.DoWork += moveCopyViewModel.Copy;
+                    moveCopyViewModel.BackgroundWorker.RunWorkerAsync();
                 }));
             mShortcutManager.AddAction(new ShortcutAction("Paste", () => { }));
-            mShortcutManager.AddAction(new ShortcutAction("Move", moveCopyViewModel.Move));
-            mShortcutManager.AddAction(new ShortcutAction("Delete", moveCopyViewModel.Delete));
+            mShortcutManager.AddAction(new ShortcutAction("Move", () =>
+            {
+                moveCopyViewModel.Visible = Visibility.Visible;
+                moveCopyViewModel.InitializeWorker();
+                moveCopyViewModel.BackgroundWorker.DoWork += moveCopyViewModel.Move;
+                moveCopyViewModel.BackgroundWorker.RunWorkerAsync();
+            }
+        ));
+            mShortcutManager.AddAction(new ShortcutAction("Delete", () =>
+                {
+                    moveCopyViewModel.Visible = Visibility.Visible;
+                    moveCopyViewModel.InitializeWorker();
+                    moveCopyViewModel.BackgroundWorker.DoWork += moveCopyViewModel.Delete;
+                    moveCopyViewModel.BackgroundWorker.RunWorkerAsync();
+                }));
         }
 
         public void Dispose()
         {
-            mViewController.CloseToolPanel(PluginGuid,mPluginViewGuid);
+            mViewController.CloseToolPanel(PluginGuid, mPluginViewGuid);
         }
     }
 }

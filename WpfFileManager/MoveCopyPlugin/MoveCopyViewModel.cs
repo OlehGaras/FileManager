@@ -8,6 +8,7 @@ using System.Windows.Data;
 using FileManager;
 using DirectoryInfo = FileManager.DirectoryInfo;
 using FileInfo = FileManager.FileInfo;
+using System.Linq;
 
 namespace MoveCopyPlugin
 {
@@ -15,9 +16,25 @@ namespace MoveCopyPlugin
     {
         private readonly ICurrentFileSystemState mCurrentFileSystemState;
         private readonly IErrorManager mErrorManager;
+        private CopyProgressViewModel mCurrentFile;
 
-        public  BackgroundWorker BackgroundWorker = new BackgroundWorker();
+        public BackgroundWorker BackgroundWorker = new BackgroundWorker();
         private CancellationTokenSource mCts;
+
+        private CopyProgressViewModel[] mFiles;
+        public CopyProgressViewModel[] Files
+        {
+            get { return mFiles; }
+            set
+            {
+                if (value != mFiles)
+                {
+                    mFiles = value;
+                    OnPropertyChanged("Files");
+
+                }
+            }
+        }
 
         private Visibility mVisible = Visibility.Collapsed;
         public Visibility Visible
@@ -42,37 +59,74 @@ namespace MoveCopyPlugin
             mCurrentFileSystemState = currentFileSystemState;
             mErrorManager = errorManager;
 
-            //mCts = new CancellationTokenSource();
-            ////BackgroundWorker.DoWork += GetGroupsOfFiles;
-            //BackgroundWorker.RunWorkerCompleted += BackgroundWorkerRunWorkerCompleted;
-            //BackgroundWorker.WorkerSupportsCancellation = true;
-            //BackgroundWorker.WorkerReportsProgress = true;
+            mCts = new CancellationTokenSource();
+            InitializeWorker();
+        }
+
+        public void InitializeWorker()
+        {
+            BackgroundWorker = new BackgroundWorker();
+            BackgroundWorker.RunWorkerCompleted += BackgroundWorkerRunWorkerCompleted;
+            BackgroundWorker.WorkerSupportsCancellation = true;
+            BackgroundWorker.WorkerReportsProgress = true;
+            BackgroundWorker.ProgressChanged += (sender, args) =>
+                {
+                    if (mCurrentFile != null)
+                        mCurrentFile.Progress = args.ProgressPercentage;
+                };
+        }
+
+        private void BackgroundWorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Visible = Visibility.Collapsed;
+            mCurrentFileSystemState.SetCurrentPanel(Panel.Left);
+            mCurrentFileSystemState.RefreshCurrentDirectory();
+            mCurrentFileSystemState.SetCurrentPanel(Panel.Right);
+            mCurrentFileSystemState.RefreshCurrentDirectory();
         }
 
         public void Copy(object sender, DoWorkEventArgs doWorkEventArgs)
         {
-            Visible = Visibility.Visible;
-            var fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
-                                                 ? mCurrentFileSystemState.LeftSelectedItem
-                                                 : mCurrentFileSystemState.RightSelectedItem;
+            var fileSystemInfos = mCurrentFileSystemState.CurrentPanel == Panel.Left
+                                                 ? mCurrentFileSystemState.LeftSelectedItems
+                                                 : mCurrentFileSystemState.RightSelectedItems;
+
+            var arr = new IFileSystemInfo[fileSystemInfos.Count];
+            fileSystemInfos.CopyTo(arr, 0);
+
+            Files = arr.Select(item => new CopyProgressViewModel(item)).ToArray();
+
             DirectoryInfo targetDir = mCurrentFileSystemState.CurrentPanel == Panel.Left
                                           ? mCurrentFileSystemState.RightCurrentDirectory
                                           : mCurrentFileSystemState.LeftCurrentDirectory;
-            
-            CopyImpl(fileSystemInfo, targetDir);
-            Visible = Visibility.Collapsed;
+
+            foreach (var v in Files)
+            {
+                CopyImpl(v, targetDir);
+            }
         }
 
-        private void CopyImpl(IFileSystemInfo fileSystemInfo, DirectoryInfo targetDir)
+        private void CopyImpl(CopyProgressViewModel copyProgressViewModel, DirectoryInfo targetDir)
         {
             try
             {
+                mCurrentFile = copyProgressViewModel;
+                var fileSystemInfo = copyProgressViewModel.FileSystemInfo;
                 var destDirName = Path.Combine(targetDir.Path, fileSystemInfo.DisplayName);
-                if (fileSystemInfo is FileInfo)
+                var fc = new FileCopy(16);
+                
+                fc.Progress += (sender, i) =>
+                    {
+                        if (BackgroundWorker != null)
+                            BackgroundWorker.ReportProgress((int)i);
+                    };
+
+                if (copyProgressViewModel.IsFile)
                 {
-                    File.Copy(fileSystemInfo.Path, destDirName);
+                    fc.Copy(fileSystemInfo.Path, destDirName);
                 }
-                if (fileSystemInfo is DirectoryInfo)
+                
+                if (copyProgressViewModel.IsDir)
                 {
                     DirectoryCopy(fileSystemInfo.Path, destDirName, true);
                 }
@@ -80,7 +134,7 @@ namespace MoveCopyPlugin
             catch (Exception exception)
             {
                 mErrorManager.AddError(new Error(exception));
-            }           
+            }
         }
 
         private void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
@@ -127,17 +181,22 @@ namespace MoveCopyPlugin
             }
         }
 
-        public void Move()
+        public void Move(object sender, DoWorkEventArgs doWorkEventArgs)
         {
-            Visible = Visibility.Visible;
-            IFileSystemInfo fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
-                                                 ? mCurrentFileSystemState.LeftSelectedItem
-                                                 : mCurrentFileSystemState.RightSelectedItem;
+            var fileSystemInfos = mCurrentFileSystemState.CurrentPanel == Panel.Left
+                                                 ? mCurrentFileSystemState.LeftSelectedItems
+                                                 : mCurrentFileSystemState.RightSelectedItems;
             DirectoryInfo targetDir = mCurrentFileSystemState.CurrentPanel == Panel.Left
                                           ? mCurrentFileSystemState.RightCurrentDirectory
                                           : mCurrentFileSystemState.LeftCurrentDirectory;
-            MoveImpl(fileSystemInfo, targetDir);
-            Visible = Visibility.Collapsed;
+
+            var arr = new IFileSystemInfo[fileSystemInfos.Count];
+            fileSystemInfos.CopyTo(arr, 0);
+
+            foreach (var v in arr)
+            {
+                MoveImpl(v, targetDir);
+            }
         }
 
         private void MoveImpl(IFileSystemInfo fileSystemInfo, DirectoryInfo targetDir)
@@ -160,14 +219,20 @@ namespace MoveCopyPlugin
             }
         }
 
-        public void Delete()
+        public void Delete(object sender, DoWorkEventArgs doWorkEventArgs)
         {
             Visible = Visibility.Visible;
-            IFileSystemInfo fileSystemInfo = mCurrentFileSystemState.CurrentPanel == Panel.Left
-                                                 ? mCurrentFileSystemState.LeftSelectedItem
-                                                 : mCurrentFileSystemState.RightSelectedItem;
-            DeleteImpl(fileSystemInfo);
-            Visible = Visibility.Collapsed;
+            var fileSystemInfos = mCurrentFileSystemState.CurrentPanel == Panel.Left
+                                                 ? mCurrentFileSystemState.LeftSelectedItems
+                                                 : mCurrentFileSystemState.RightSelectedItems;
+
+            var arr = new IFileSystemInfo[fileSystemInfos.Count];
+            fileSystemInfos.CopyTo(arr, 0);
+
+            foreach (var v in arr)
+            {
+                DeleteImpl(v);
+            }
         }
 
         private void DeleteImpl(IFileSystemInfo fileSystemInfo)
@@ -189,6 +254,41 @@ namespace MoveCopyPlugin
             }
         }
     }
+
+    public class CopyProgressViewModel : ViewModelBase
+    {
+        public readonly IFileSystemInfo FileSystemInfo;
+
+        public CopyProgressViewModel(IFileSystemInfo fileSystemInfo)
+        {
+            if (fileSystemInfo == null) 
+                throw new ArgumentNullException("fileSystemInfo");
+            FileSystemInfo = fileSystemInfo;
+        }
+
+        public bool IsFile { get { return FileSystemInfo is FileInfo; } }
+        public bool IsDir { get { return FileSystemInfo is DirectoryInfo; } }
+
+        private int mProgress;
+        public int Progress
+        {
+            get { return mProgress; }
+            set
+            {
+                if (mProgress != value)
+                {
+                    mProgress = value;
+                    OnPropertyChanged("Progress");
+                }
+            }
+        }
+
+        public string DisplayName
+        {
+            get { return FileSystemInfo.DisplayName; }
+        }
+    }
+
     public class BooleanToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

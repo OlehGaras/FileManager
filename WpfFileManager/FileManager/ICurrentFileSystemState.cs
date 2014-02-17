@@ -19,6 +19,7 @@ namespace FileManager
         void SetLeftSelectedItem(IFileSystemInfo fileSystemInfo);
         void SetRightSelectedItem(IFileSystemInfo fileSystemInfo);
         event EventHandler CurrentDirectoryChanged;
+        void RefreshCurrentDirectory();
         void SetLeftSelectedItems(IList value);
         void SetRightSelectedItems(IList value);
     }
