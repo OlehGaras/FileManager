@@ -28,7 +28,7 @@ namespace MoveCopyPlugin
             double read = 0;
             var buffer = new byte[mChunkSize];
             var bytesRead = from.Read(buffer, 0, mChunkSize);
-            while (bytesRead != 0)
+            while (bytesRead > 0)
             {
                 read += bytesRead;
                 to.Write(buffer, 0, bytesRead);
@@ -39,7 +39,7 @@ namespace MoveCopyPlugin
 
         private void ReportProgress(double read, long length)
         {
-            var progress = read/length*100;
+            var progress = (int )((read/length)*100);
             if (Math.Abs(mPrevProgress - progress) >= 1)
             {
                 OnProgress(progress);

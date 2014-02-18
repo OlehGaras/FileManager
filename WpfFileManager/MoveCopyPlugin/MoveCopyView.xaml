@@ -13,7 +13,11 @@
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type moveCopyPlugin:CopyProgressViewModel}">
                     <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Width="{Binding ElementName=listView, Path=ActualWidth}">
-                        <ProgressBar Grid.Row="1" x:Name="wpfProgressBar" Maximum="100" Value="{Binding Path=Progress, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Stretch" />
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <ProgressBar Grid.Row="1" x:Name="wpfProgressBar" Maximum="100" Value="{Binding Path=Progress, UpdateSourceTrigger=PropertyChanged}" Foreground="Blue" Height="10" HorizontalAlignment="Stretch" />
                         <TextBlock Grid.Row="0" Margin="5" Padding="3" HorizontalAlignment="Center" Text="{Binding DisplayName}" Width="Auto" Background="Transparent" Foreground="Blue"/>
                     </Grid>
                 </DataTemplate>

@@ -2,9 +2,11 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Threading;
 using FileManager;
 using DirectoryInfo = FileManager.DirectoryInfo;
 using FileInfo = FileManager.FileInfo;
@@ -31,12 +33,13 @@ namespace MoveCopyPlugin
                 {
                     mFiles = value;
                     OnPropertyChanged("Files");
-
                 }
             }
         }
 
         private Visibility mVisible = Visibility.Collapsed;
+        private Dispatcher mDispatcher;
+
         public Visibility Visible
         {
             get { return mVisible; }
@@ -58,7 +61,7 @@ namespace MoveCopyPlugin
                 throw new ArgumentNullException("errorManager");
             mCurrentFileSystemState = currentFileSystemState;
             mErrorManager = errorManager;
-
+            mDispatcher = Dispatcher.CurrentDispatcher;
             mCts = new CancellationTokenSource();
             InitializeWorker();
         }
@@ -72,7 +75,10 @@ namespace MoveCopyPlugin
             BackgroundWorker.ProgressChanged += (sender, args) =>
                 {
                     if (mCurrentFile != null)
-                        mCurrentFile.Progress = args.ProgressPercentage;
+                    {
+                        var progressPercentage = args.ProgressPercentage;
+                        mDispatcher.Invoke(() => mCurrentFile.Progress = progressPercentage);
+                    }
                 };
         }
 
@@ -96,7 +102,7 @@ namespace MoveCopyPlugin
 
             Files = arr.Select(item => new CopyProgressViewModel(item)).ToArray();
 
-            DirectoryInfo targetDir = mCurrentFileSystemState.CurrentPanel == Panel.Left
+            var targetDir = mCurrentFileSystemState.CurrentPanel == Panel.Left
                                           ? mCurrentFileSystemState.RightCurrentDirectory
                                           : mCurrentFileSystemState.LeftCurrentDirectory;
 
@@ -113,8 +119,8 @@ namespace MoveCopyPlugin
                 mCurrentFile = copyProgressViewModel;
                 var fileSystemInfo = copyProgressViewModel.FileSystemInfo;
                 var destDirName = Path.Combine(targetDir.Path, fileSystemInfo.DisplayName);
-                var fc = new FileCopy(16);
-                
+                var fc = new FileCopy(1);
+
                 fc.Progress += (sender, i) =>
                     {
                         if (BackgroundWorker != null)
@@ -124,8 +130,9 @@ namespace MoveCopyPlugin
                 if (copyProgressViewModel.IsFile)
                 {
                     fc.Copy(fileSystemInfo.Path, destDirName);
+                    BackgroundWorker.ReportProgress(100);                  
                 }
-                
+
                 if (copyProgressViewModel.IsDir)
                 {
                     DirectoryCopy(fileSystemInfo.Path, destDirName, true);
@@ -141,6 +148,12 @@ namespace MoveCopyPlugin
         {
             var dir = new System.IO.DirectoryInfo(sourceDirName);
             var dirs = dir.GetDirectories();
+            var fileCopy = new FileCopy(4);
+            fileCopy.Progress += (sender, i) =>
+            {
+                if (BackgroundWorker != null)
+                    BackgroundWorker.ReportProgress((int)i);
+            };
 
             if (!dir.Exists)
             {
@@ -149,20 +162,18 @@ namespace MoveCopyPlugin
                 return;
             }
 
-            // If the destination directory doesn't exist, create it. 
             if (!Directory.Exists(destDirName))
             {
                 Directory.CreateDirectory(destDirName);
             }
 
-            // Get the files in the directory and copy them to the new location.
             var files = dir.GetFiles();
             foreach (var file in files)
             {
                 try
-                {
-                    string temppath = Path.Combine(destDirName, file.Name);
-                    file.CopyTo(temppath, false);
+                {               
+                    var temppath = Path.Combine(destDirName, file.Name);
+                    fileCopy.Copy(file.FullName, temppath);
                 }
                 catch (Exception exception)
                 {
@@ -170,7 +181,6 @@ namespace MoveCopyPlugin
                 }
             }
 
-            // If copying subdirectories, copy them and their contents to new location. 
             if (copySubDirs)
             {
                 foreach (var subdir in dirs)
@@ -186,29 +196,45 @@ namespace MoveCopyPlugin
             var fileSystemInfos = mCurrentFileSystemState.CurrentPanel == Panel.Left
                                                  ? mCurrentFileSystemState.LeftSelectedItems
                                                  : mCurrentFileSystemState.RightSelectedItems;
-            DirectoryInfo targetDir = mCurrentFileSystemState.CurrentPanel == Panel.Left
+            var targetDir = mCurrentFileSystemState.CurrentPanel == Panel.Left
                                           ? mCurrentFileSystemState.RightCurrentDirectory
                                           : mCurrentFileSystemState.LeftCurrentDirectory;
 
             var arr = new IFileSystemInfo[fileSystemInfos.Count];
             fileSystemInfos.CopyTo(arr, 0);
 
-            foreach (var v in arr)
+            Files = arr.Select(item => new CopyProgressViewModel(item)).ToArray();
+
+            foreach (var v in Files)
             {
-                MoveImpl(v, targetDir);
+                CopyImpl(v,targetDir);
+                //MoveImpl(v, targetDir);
+            }
+            foreach (var v in Files)
+            {
+                DeleteImpl(v.FileSystemInfo);
             }
         }
 
-        private void MoveImpl(IFileSystemInfo fileSystemInfo, DirectoryInfo targetDir)
+        private void MoveImpl(CopyProgressViewModel copyProgressViewModel, DirectoryInfo targetDir)
         {
             try
             {
+                var fileSystemInfo = copyProgressViewModel.FileSystemInfo;
                 var destDirName = Path.Combine(targetDir.Path, fileSystemInfo.DisplayName);
-                if (fileSystemInfo is FileInfo)
+                var fc = new FileCopy(1);
+
+                fc.Progress += (sender, i) =>
+                {
+                    if (BackgroundWorker != null)
+                        BackgroundWorker.ReportProgress((int)i);
+                };
+
+                if (copyProgressViewModel.IsFile)
                 {
                     File.Move(fileSystemInfo.Path, destDirName);
                 }
-                if (fileSystemInfo is DirectoryInfo)
+                if (copyProgressViewModel.IsDir)
                 {
                     Directory.Move(fileSystemInfo.Path, destDirName);
                 }
@@ -261,7 +287,7 @@ namespace MoveCopyPlugin
 
         public CopyProgressViewModel(IFileSystemInfo fileSystemInfo)
         {
-            if (fileSystemInfo == null) 
+            if (fileSystemInfo == null)
                 throw new ArgumentNullException("fileSystemInfo");
             FileSystemInfo = fileSystemInfo;
         }
@@ -286,6 +312,14 @@ namespace MoveCopyPlugin
         public string DisplayName
         {
             get { return FileSystemInfo.DisplayName; }
+            set
+            {
+                if (DisplayName != value)
+                {
+                    DisplayName = value;
+                    OnPropertyChanged("DisplayName");
+                }
+            }
         }
     }
 
