@@ -9,9 +9,9 @@ namespace FileManager
         string DisplayName { get; }
         ImageSource Icon { get; set; }
         string Extention { get; }
-        DateTime LastWritetime { get; }
+        string LastWritetime { get; }
         DateTime LastAccessTime { get; }
         DateTime CreationTime { get; }
-        long Length { get; }
+        string Length { get; }
     }
 }

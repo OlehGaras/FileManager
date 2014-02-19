@@ -44,6 +44,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CopyProgressViewModel.cs" />
     <Compile Include="MoveCopyView.xaml.cs">
       <DependentUpon>MoveCopyView.xaml</DependentUpon>
     </Compile>

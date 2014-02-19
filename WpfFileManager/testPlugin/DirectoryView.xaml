@@ -45,47 +45,35 @@
         </DataTemplate>
 
         <DataTemplate x:Key="DirectoryInfoDataTemplate3"  DataType="{x:Type fileManager:DirectoryInfo}">
-            <ListView>
-                <!--<ListView.View>
-                    <GridView>
-                        <GridViewColumn >
-                            <Image Source="{Binding Icon}" Width="32" Height="32" Grid.Column="0"/>
-                        </GridViewColumn>
-                        <GridViewColumn Header="{Binding DisplayName}"/>
-                        <GridViewColumn Header="{Binding CreationTime}"/>
-
-                    </GridView>
-                </ListView.View>-->
-                <ListView.Items>
-                    <ListViewItem>
-                        <Image Source="{Binding Icon}" Width="32" Height="32" Grid.Column="0"/>
-                    </ListViewItem>
-                    <ListViewItem Content="{Binding DisplayName}"/>
-                    <ListViewItem Content="{Binding LastAccessTime}"/>
-                </ListView.Items>
-            </ListView>
-            <!--<Grid ShowGridLines="True">
+            <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Image Source="{Binding Icon}" Width="32" Height="32" Grid.Column="0"/>
-                <TextBlock Text="{Binding DisplayName}" Margin="5" VerticalAlignment="Stretch" Grid.Column="1"/>
-                <TextBlock Text="{Binding  LastWritetime}" Margin="5" VerticalAlignment="Stretch" Grid.Column="2"/>
-            </Grid>-->
+                <Image Source="{Binding Icon}" Width="32" Height="32" HorizontalAlignment="Left" Grid.Column="0"/>
+            <StackPanel Orientation="Vertical" Width="Auto" Grid.Column="1">             
+                <TextBlock Text="{Binding DisplayName}" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <TextBlock Text="{Binding  LastWritetime}" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+            </StackPanel>
+            </Grid>
         </DataTemplate>
         <DataTemplate x:Key="DoublePointInfoDataTemplate3" DataType="{x:Type testPlugin:DoublePointInfo}">
-            <TextBlock Text=".."/>
+            <TextBlock Text=".." FontSize="20"/>
         </DataTemplate>
         <DataTemplate x:Key="FileInfoDataTemplate3" DataType="{x:Type fileManager:FileInfo}">
-            <StackPanel Orientation="Horizontal">
-                <Image Source="{Binding Icon}" Width="32" Height="32"/>
-                <TextBlock Text="{Binding DisplayName}" Margin="5" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding  Extention}" Margin="5" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding  Length}" Margin="5" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding  LastWritetime}" Margin="5" VerticalAlignment="Center"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Image Source="{Binding Icon}" Width="32" Height="32" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="0"/>
+                <StackPanel Orientation="Vertical" Width="Auto" Grid.Column="1">
+                    <TextBlock Text="{Binding DisplayName}" Margin="5" FontSize="15" FontStyle="Italic" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <TextBlock Text="{Binding  Extention}" Margin="5" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding  Length}" Margin="5" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding  LastWritetime}" Margin="5" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
         </DataTemplate>
 
         <l:PropertyDataTemplateSelector x:Key="Style1" 
@@ -121,7 +109,11 @@
                         </DataTrigger>
 
                         <DataTrigger Binding="{Binding Style, UpdateSourceTrigger=PropertyChanged}" Value ="Style2">
-                            <Setter Property="ItemTemplateSelector" Value="{StaticResource Style3}"/>
+                            <Setter Property="ItemTemplateSelector" Value="{StaticResource Style2}"/>
+                        </DataTrigger>
+
+                        <DataTrigger Binding="{Binding Style, UpdateSourceTrigger=PropertyChanged}" Value ="Style3">
+                            <Setter Property="ItemTemplateSelector" Value="{StaticResource  Style3}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

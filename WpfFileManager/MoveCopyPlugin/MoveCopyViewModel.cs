@@ -2,8 +2,6 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
@@ -21,7 +19,6 @@ namespace MoveCopyPlugin
         private CopyProgressViewModel mCurrentFile;
 
         public BackgroundWorker BackgroundWorker = new BackgroundWorker();
-        private CancellationTokenSource mCts;
 
         private CopyProgressViewModel[] mFiles;
         public CopyProgressViewModel[] Files
@@ -38,7 +35,7 @@ namespace MoveCopyPlugin
         }
 
         private Visibility mVisible = Visibility.Collapsed;
-        private Dispatcher mDispatcher;
+        private readonly Dispatcher mDispatcher;
 
         public Visibility Visible
         {
@@ -62,7 +59,6 @@ namespace MoveCopyPlugin
             mCurrentFileSystemState = currentFileSystemState;
             mErrorManager = errorManager;
             mDispatcher = Dispatcher.CurrentDispatcher;
-            mCts = new CancellationTokenSource();
             InitializeWorker();
         }
 
@@ -277,48 +273,6 @@ namespace MoveCopyPlugin
             catch (Exception exception)
             {
                 mErrorManager.AddError(new Error(exception));
-            }
-        }
-    }
-
-    public class CopyProgressViewModel : ViewModelBase
-    {
-        public readonly IFileSystemInfo FileSystemInfo;
-
-        public CopyProgressViewModel(IFileSystemInfo fileSystemInfo)
-        {
-            if (fileSystemInfo == null)
-                throw new ArgumentNullException("fileSystemInfo");
-            FileSystemInfo = fileSystemInfo;
-        }
-
-        public bool IsFile { get { return FileSystemInfo is FileInfo; } }
-        public bool IsDir { get { return FileSystemInfo is DirectoryInfo; } }
-
-        private int mProgress;
-        public int Progress
-        {
-            get { return mProgress; }
-            set
-            {
-                if (mProgress != value)
-                {
-                    mProgress = value;
-                    OnPropertyChanged("Progress");
-                }
-            }
-        }
-
-        public string DisplayName
-        {
-            get { return FileSystemInfo.DisplayName; }
-            set
-            {
-                if (DisplayName != value)
-                {
-                    DisplayName = value;
-                    OnPropertyChanged("DisplayName");
-                }
             }
         }
     }

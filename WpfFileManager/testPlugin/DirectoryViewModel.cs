@@ -17,6 +17,7 @@ namespace testPlugin
         private readonly IErrorManager mErrorManager;
         private readonly Panel mPanel;
         private DirectoryInfo mCurrentPanelDirectory;
+        private readonly List<string> mStyles = new List<string>();
 
         private DelegateCommand mOnListItemKeyPressed;
 
@@ -87,6 +88,10 @@ namespace testPlugin
             if (errorManager == null)
                 throw new ArgumentNullException("errorManager");
             mErrorManager = errorManager;
+
+            mStyles.Add("Style1");
+            mStyles.Add("Style2");
+            mStyles.Add("Style3");
 
             mPanel = panel;
             mCurrentPanelDirectory = mPanel == Panel.Left ? mCurrentFileSystemState.LeftCurrentDirectory : mCurrentFileSystemState.RightCurrentDirectory;
@@ -224,8 +229,13 @@ namespace testPlugin
 
         public void ChangeStyle()
         {
-            mStyle = Style == "Style1" ? "Style2" : "Style1";
-            OnPropertyChanged("Style");
+            var index = mStyles.IndexOf(Style);
+            if (index == mStyles.Count - 1)
+            {
+                Style = mStyles[0];
+                return;
+            }
+            Style = mStyles[index + 1];
         }
 
         public void SetStyle(string style)

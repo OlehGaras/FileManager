@@ -9,7 +9,7 @@ namespace MoveCopyPlugin
     public class Plugin : IPlugin
     {
         private readonly IShortcutManager mShortcutManager;
-        private IErrorManager mErrorManager;
+        private readonly IErrorManager mErrorManager;
         private readonly IViewController mViewController;
         private readonly ICurrentFileSystemState mCurrentFileSystemState;
         private Guid mPluginViewGuid;
@@ -63,7 +63,7 @@ namespace MoveCopyPlugin
                     moveCopyViewModel.BackgroundWorker.DoWork += moveCopyViewModel.Copy;
                     moveCopyViewModel.BackgroundWorker.RunWorkerAsync();
                 }));
-            mShortcutManager.AddAction(new ShortcutAction("Paste", () => { }));
+            //mShortcutManager.AddAction(new ShortcutAction("Paste", () => { }));
             mShortcutManager.AddAction(new ShortcutAction("Move", () =>
             {
                 moveCopyViewModel.Visible = Visibility.Visible;

@@ -46,8 +46,8 @@ namespace testPlugin
             mViewController.SetLeftPanelContent(leftPanel);
             mViewController.SetRightPanelContent(rightPanel);
 
-            mShortcutManager.AddAction(new ShortcutAction("HelloWorld Action", () => Console.WriteLine("HelloWorld")));
-            mShortcutManager.AddAction(new ShortcutAction("ByeWorld Action", () => Console.WriteLine("ByeWorld")));
+            //mShortcutManager.AddAction(new ShortcutAction("HelloWorld Action", () => Console.WriteLine("HelloWorld")));
+            //mShortcutManager.AddAction(new ShortcutAction("ByeWorld Action", () => Console.WriteLine("ByeWorld")));
             mShortcutManager.AddAction(new ShortcutAction("Change Style", () =>
             {
                 leftDirectoryViewModel.ChangeStyle();
